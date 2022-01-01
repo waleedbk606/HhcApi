@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="HHCModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="eid" />
+          </Key>
+          <Property Name="Oid" Type="int" />
+          <Property Name="eid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fname" Type="nvarchar(max)" />
+          <Property Name="Lname" Type="nvarchar(max)" />
+          <Property Name="Age" Type="nvarchar(max)" />
+          <Property Name="Gender" Type="nvarchar(max)" />
+          <Property Name="CNIC" Type="nvarchar(max)" />
+          <Property Name="Phone" Type="nvarchar(max)" />
+          <Property Name="Email" Type="nvarchar(max)" />
+          <Property Name="Qualification" Type="nvarchar(max)" />
+          <Property Name="Experience" Type="nvarchar(max)" />
+          <Property Name="Username" Type="nvarchar(max)" />
+          <Property Name="Password" Type="nvarchar(max)" />
+          <Property Name="OrgName" Type="nvarchar(max)" />
+          <Property Name="Department" Type="nvarchar(max)" />
+          <Property Name="Status" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Login">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Username" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="Password" Type="nchar" MaxLength="8" Nullable="false" />
+          <Property Name="Role" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="Organizations">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" />
+          <Property Name="Address" Type="varchar(max)" />
+          <Property Name="City" Type="varchar(max)" />
+          <Property Name="Phonenum" Type="varchar(max)" />
+          <Property Name="Email" Type="varchar(max)" />
+          <Property Name="HooName" Type="varchar(max)" />
+          <Property Name="Discription" Type="varchar(max)" />
+          <Property Name="Username" Type="varchar(max)" />
+          <Property Name="Password" Type="varchar(max)" />
+          <Property Name="Status" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="Patient">
+          <Key>
+            <PropertyRef Name="pid" />
+          </Key>
+          <Property Name="pid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fname" Type="nchar" MaxLength="10" />
+          <Property Name="Lname" Type="nchar" MaxLength="10" />
+          <Property Name="Age" Type="nchar" MaxLength="10" />
+          <Property Name="Gender" Type="nchar" MaxLength="10" />
+          <Property Name="Phone" Type="nchar" MaxLength="10" />
+          <Property Name="Address" Type="nchar" MaxLength="10" />
+          <Property Name="Service" Type="nchar" MaxLength="10" />
+          <Property Name="Longitude" Type="nchar" MaxLength="10" />
+          <Property Name="Latitude" Type="nchar" MaxLength="10" />
+          <Property Name="uid" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Services">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="Discription" Type="varchar" MaxLength="50" />
+          <Property Name="Staff" Type="varchar" MaxLength="50" />
+          <Property Name="Charges" Type="varchar" MaxLength="50" />
+          <Property Name="Organization" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Signup">
+          <Key>
+            <PropertyRef Name="Uid" />
+          </Key>
+          <Property Name="Uid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fname" Type="varchar(max)" Nullable="false" />
+          <Property Name="Lname" Type="varchar(max)" Nullable="false" />
+          <Property Name="DOB" Type="varchar(max)" Nullable="false" />
+          <Property Name="Gender" Type="varchar(max)" />
+          <Property Name="Email" Type="varchar(max)" Nullable="false" />
+          <Property Name="Phone" Type="varchar(max)" Nullable="false" />
+          <Property Name="Username" Type="varchar(max)" Nullable="false" />
+          <Property Name="Password" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Employee_Organizations">
+          <End Role="Organizations" Type="Self.Organizations" Multiplicity="0..1" />
+          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organizations">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Employee">
+              <PropertyRef Name="Oid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Patient_Signup">
+          <End Role="Signup" Type="Self.Signup" Multiplicity="1" />
+          <End Role="Patient" Type="Self.Patient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Signup">
+              <PropertyRef Name="Uid" />
+            </Principal>
+            <Dependent Role="Patient">
+              <PropertyRef Name="uid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="HHCModelStoreContainer">
+          <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Login" EntityType="Self.Login" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Organizations" EntityType="Self.Organizations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Patient" EntityType="Self.Patient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Services" EntityType="Self.Services" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Signup" EntityType="Self.Signup" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Employee_Organizations" Association="Self.FK_Employee_Organizations">
+            <End Role="Organizations" EntitySet="Organizations" />
+            <End Role="Employee" EntitySet="Employee" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Patient_Signup" Association="Self.FK_Patient_Signup">
+            <End Role="Signup" EntitySet="Signup" />
+            <End Role="Patient" EntitySet="Patient" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="HHCModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Login">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Username" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="8" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <EntityContainer Name="HHCEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Logins" EntityType="Self.Login" />
+          <EntitySet Name="Organizations" EntityType="HHCModel.Organization" />
+          <EntitySet Name="Signups" EntityType="HHCModel.Signup" />
+          <EntitySet Name="Services" EntityType="HHCModel.Service" />
+          <EntitySet Name="Employees" EntityType="HHCModel.Employee" />
+          <EntitySet Name="Patients" EntityType="HHCModel.Patient" />
+          <AssociationSet Name="FK_Patient_Signup" Association="HHCModel.FK_Patient_Signup">
+            <End Role="Signup" EntitySet="Signups" />
+            <End Role="Patient" EntitySet="Patients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Employee_Organizations" Association="HHCModel.FK_Employee_Organizations">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="Employee" EntitySet="Employees" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Organization">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Phonenum" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HooName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Discription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Employees" Relationship="HHCModel.FK_Employee_Organizations" FromRole="Organization" ToRole="Employee" />
+        </EntityType>
+        <EntityType Name="Signup">
+          <Key>
+            <PropertyRef Name="Uid" />
+          </Key>
+          <Property Name="Uid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Lname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DOB" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Gender" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Phone" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Patients" Relationship="HHCModel.FK_Patient_Signup" FromRole="Signup" ToRole="Patient" />
+        </EntityType>
+        <EntityType Name="Service">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Discription" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Staff" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Charges" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Organization" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="eid" />
+          </Key>
+          <Property Name="eid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Lname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Age" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Gender" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CNIC" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Qualification" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Experience" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="OrgName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Department" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Oid" Type="Int32" />
+          <NavigationProperty Name="Organization" Relationship="HHCModel.FK_Employee_Organizations" FromRole="Employee" ToRole="Organization" />
+        </EntityType>
+        <EntityType Name="Patient">
+          <Key>
+            <PropertyRef Name="pid" />
+          </Key>
+          <Property Name="pid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fname" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Lname" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Age" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Gender" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Service" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Longitude" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Latitude" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="uid" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Signup" Relationship="HHCModel.FK_Patient_Signup" FromRole="Patient" ToRole="Signup" />
+        </EntityType>
+        <Association Name="FK_Patient_Signup">
+          <End Type="HHCModel.Signup" Role="Signup" Multiplicity="1" />
+          <End Type="HHCModel.Patient" Role="Patient" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Signup">
+              <PropertyRef Name="Uid" />
+            </Principal>
+            <Dependent Role="Patient">
+              <PropertyRef Name="uid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Employee_Organizations">
+          <End Type="HHCModel.Organization" Role="Organization" Multiplicity="0..1" />
+          <End Type="HHCModel.Employee" Role="Employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Employee">
+              <PropertyRef Name="Oid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="HHCModelStoreContainer" CdmEntityContainer="HHCEntities">
+          <EntitySetMapping Name="Logins">
+            <EntityTypeMapping TypeName="HHCModel.Login">
+              <MappingFragment StoreEntitySet="Login">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Organizations">
+            <EntityTypeMapping TypeName="HHCModel.Organization">
+              <MappingFragment StoreEntitySet="Organizations">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Discription" ColumnName="Discription" />
+                <ScalarProperty Name="HooName" ColumnName="HooName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phonenum" ColumnName="Phonenum" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Signups">
+            <EntityTypeMapping TypeName="HHCModel.Signup">
+              <MappingFragment StoreEntitySet="Signup">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="DOB" ColumnName="DOB" />
+                <ScalarProperty Name="Lname" ColumnName="Lname" />
+                <ScalarProperty Name="Fname" ColumnName="Fname" />
+                <ScalarProperty Name="Uid" ColumnName="Uid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Services">
+            <EntityTypeMapping TypeName="HHCModel.Service">
+              <MappingFragment StoreEntitySet="Services">
+                <ScalarProperty Name="Organization" ColumnName="Organization" />
+                <ScalarProperty Name="Charges" ColumnName="Charges" />
+                <ScalarProperty Name="Staff" ColumnName="Staff" />
+                <ScalarProperty Name="Discription" ColumnName="Discription" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="HHCModel.Employee">
+              <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="Oid" ColumnName="Oid" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="OrgName" ColumnName="OrgName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Experience" ColumnName="Experience" />
+                <ScalarProperty Name="Qualification" ColumnName="Qualification" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="CNIC" ColumnName="CNIC" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Lname" ColumnName="Lname" />
+                <ScalarProperty Name="Fname" ColumnName="Fname" />
+                <ScalarProperty Name="eid" ColumnName="eid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Patients">
+            <EntityTypeMapping TypeName="HHCModel.Patient">
+              <MappingFragment StoreEntitySet="Patient">
+                <ScalarProperty Name="uid" ColumnName="uid" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="Service" ColumnName="Service" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Lname" ColumnName="Lname" />
+                <ScalarProperty Name="Fname" ColumnName="Fname" />
+                <ScalarProperty Name="pid" ColumnName="pid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

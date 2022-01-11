@@ -29,8 +29,7 @@ namespace HhcApi.Models
         public string OrgName { get; set; }
         public string Department { get; set; }
         public string Status { get; set; }
-        public Nullable<int> Oid { get; set; }
-    
-        public virtual Organization Organization { get; set; }
+        public Nullable<int> NofComApm { get; set; }
+        public Nullable<int> Raitings { get; set; }
     }
 }

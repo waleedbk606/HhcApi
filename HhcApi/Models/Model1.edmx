@@ -5,11 +5,38 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="HHCModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'HHC.dbo.Appointments' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Appointments">
+          <Key>
+            <PropertyRef Name="aid" />
+            <PropertyRef Name="eid" />
+            <PropertyRef Name="uid" />
+          </Key>
+          <Property Name="aid" Type="int" Nullable="false" />
+          <Property Name="orgname" Type="nvarchar(max)" />
+          <Property Name="eid" Type="int" Nullable="false" />
+          <Property Name="empname" Type="nvarchar(max)" />
+          <Property Name="dep" Type="nvarchar(max)" />
+          <Property Name="service" Type="nvarchar(max)" />
+          <Property Name="uid" Type="int" Nullable="false" />
+          <Property Name="username" Type="nvarchar(max)" />
+          <Property Name="pfname" Type="nvarchar(max)" />
+          <Property Name="plname" Type="nvarchar(max)" />
+          <Property Name="age" Type="int" />
+          <Property Name="gender" Type="nvarchar(max)" />
+          <Property Name="phnum" Type="nvarchar(max)" />
+          <Property Name="address" Type="nvarchar(max)" />
+          <Property Name="date" Type="nvarchar(max)" />
+          <Property Name="timeslot" Type="nchar" MaxLength="10" />
+          <Property Name="timeduration" Type="nchar" MaxLength="10" />
+          <Property Name="status" Type="nvarchar(max)" />
+          <Property Name="ratings" Type="int" />
+        </EntityType>
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="eid" />
           </Key>
-          <Property Name="Oid" Type="int" />
           <Property Name="eid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Fname" Type="nvarchar(max)" />
           <Property Name="Lname" Type="nvarchar(max)" />
@@ -25,6 +52,8 @@
           <Property Name="OrgName" Type="nvarchar(max)" />
           <Property Name="Department" Type="nvarchar(max)" />
           <Property Name="Status" Type="nvarchar(max)" />
+          <Property Name="NofComApm" Type="int" />
+          <Property Name="Raitings" Type="int" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -51,21 +80,21 @@
           <Property Name="Password" Type="varchar(max)" />
           <Property Name="Status" Type="nchar" MaxLength="10" />
         </EntityType>
-        <EntityType Name="Patient">
+        <EntityType Name="Schedule">
           <Key>
-            <PropertyRef Name="pid" />
+            <PropertyRef Name="sid" />
           </Key>
-          <Property Name="pid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Fname" Type="nchar" MaxLength="10" />
-          <Property Name="Lname" Type="nchar" MaxLength="10" />
-          <Property Name="Age" Type="nchar" MaxLength="10" />
-          <Property Name="Gender" Type="nchar" MaxLength="10" />
-          <Property Name="Phone" Type="nchar" MaxLength="10" />
-          <Property Name="Address" Type="nchar" MaxLength="10" />
-          <Property Name="Service" Type="nchar" MaxLength="10" />
-          <Property Name="Longitude" Type="nchar" MaxLength="10" />
-          <Property Name="Latitude" Type="nchar" MaxLength="10" />
-          <Property Name="uid" Type="int" Nullable="false" />
+          <Property Name="sid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="eid" Type="int" Nullable="false" />
+          <Property Name="fname" Type="nvarchar(max)" />
+          <Property Name="lname" Type="nvarchar(max)" />
+          <Property Name="orgname" Type="nvarchar(max)" />
+          <Property Name="dep" Type="nvarchar(max)" />
+          <Property Name="shift" Type="nvarchar(max)" />
+          <Property Name="noOfpndApnt" Type="int" />
+          <Property Name="ratings" Type="int" />
+          <Property Name="date" Type="nvarchar(max)" />
+          <Property Name="timeslot" Type="nchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="Services">
           <Key>
@@ -92,45 +121,36 @@
           <Property Name="Username" Type="varchar(max)" Nullable="false" />
           <Property Name="Password" Type="varchar(max)" Nullable="false" />
         </EntityType>
-        <Association Name="FK_Employee_Organizations">
-          <End Role="Organizations" Type="Self.Organizations" Multiplicity="0..1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Organizations">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="Oid" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Patient_Signup">
-          <End Role="Signup" Type="Self.Signup" Multiplicity="1" />
-          <End Role="Patient" Type="Self.Patient" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Signup">
-              <PropertyRef Name="Uid" />
-            </Principal>
-            <Dependent Role="Patient">
-              <PropertyRef Name="uid" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="HHCModelStoreContainer">
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Login" EntityType="Self.Login" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Organizations" EntityType="Self.Organizations" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Patient" EntityType="Self.Patient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Services" EntityType="Self.Services" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Signup" EntityType="Self.Signup" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Employee_Organizations" Association="Self.FK_Employee_Organizations">
-            <End Role="Organizations" EntitySet="Organizations" />
-            <End Role="Employee" EntitySet="Employee" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Patient_Signup" Association="Self.FK_Patient_Signup">
-            <End Role="Signup" EntitySet="Signup" />
-            <End Role="Patient" EntitySet="Patient" />
-          </AssociationSet>
+          <EntitySet Name="Appointments" EntityType="Self.Appointments" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Appointments].[aid] AS [aid], 
+    [Appointments].[orgname] AS [orgname], 
+    [Appointments].[eid] AS [eid], 
+    [Appointments].[empname] AS [empname], 
+    [Appointments].[dep] AS [dep], 
+    [Appointments].[service] AS [service], 
+    [Appointments].[uid] AS [uid], 
+    [Appointments].[username] AS [username], 
+    [Appointments].[pfname] AS [pfname], 
+    [Appointments].[plname] AS [plname], 
+    [Appointments].[age] AS [age], 
+    [Appointments].[gender] AS [gender], 
+    [Appointments].[phnum] AS [phnum], 
+    [Appointments].[address] AS [address], 
+    [Appointments].[date] AS [date], 
+    [Appointments].[timeslot] AS [timeslot], 
+    [Appointments].[timeduration] AS [timeduration], 
+    [Appointments].[status] AS [status], 
+    [Appointments].[ratings] AS [ratings]
+    FROM [dbo].[Appointments] AS [Appointments]</DefiningQuery>
+          </EntitySet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -151,16 +171,9 @@
           <EntitySet Name="Signups" EntityType="HHCModel.Signup" />
           <EntitySet Name="Services" EntityType="HHCModel.Service" />
           <EntitySet Name="Employees" EntityType="HHCModel.Employee" />
-          <EntitySet Name="Patients" EntityType="HHCModel.Patient" />
-          <AssociationSet Name="FK_Patient_Signup" Association="HHCModel.FK_Patient_Signup">
-            <End Role="Signup" EntitySet="Signups" />
-            <End Role="Patient" EntitySet="Patients" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Employee_Organizations" Association="HHCModel.FK_Employee_Organizations">
-            <End Role="Organization" EntitySet="Organizations" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
+          <EntitySet Name="Appointments" EntityType="HHCModel.Appointment" />
+          </EntityContainer>
         <EntityType Name="Organization">
           <Key>
             <PropertyRef Name="id" />
@@ -176,7 +189,6 @@
           <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Employees" Relationship="HHCModel.FK_Employee_Organizations" FromRole="Organization" ToRole="Employee" />
         </EntityType>
         <EntityType Name="Signup">
           <Key>
@@ -191,7 +203,6 @@
           <Property Name="Phone" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Patients" Relationship="HHCModel.FK_Patient_Signup" FromRole="Signup" ToRole="Patient" />
         </EntityType>
         <EntityType Name="Service">
           <Key>
@@ -223,51 +234,52 @@
           <Property Name="OrgName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Department" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Oid" Type="Int32" />
-          <NavigationProperty Name="Organization" Relationship="HHCModel.FK_Employee_Organizations" FromRole="Employee" ToRole="Organization" />
+          <Property Name="NofComApm" Type="Int32" />
+          <Property Name="Raitings" Type="Int32" />
         </EntityType>
-        <EntityType Name="Patient">
+        <EntityType Name="Schedule">
           <Key>
-            <PropertyRef Name="pid" />
+            <PropertyRef Name="sid" />
           </Key>
-          <Property Name="pid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Fname" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Lname" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Age" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Gender" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Phone" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Address" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Service" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Longitude" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="Latitude" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="uid" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Signup" Relationship="HHCModel.FK_Patient_Signup" FromRole="Patient" ToRole="Signup" />
+          <Property Name="sid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="eid" Type="Int32" Nullable="false" />
+          <Property Name="fname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="lname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="orgname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="dep" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="shift" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="noOfpndApnt" Type="Int32" />
+          <Property Name="ratings" Type="Int32" />
+          <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="timeslot" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
         </EntityType>
-        <Association Name="FK_Patient_Signup">
-          <End Type="HHCModel.Signup" Role="Signup" Multiplicity="1" />
-          <End Type="HHCModel.Patient" Role="Patient" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Signup">
-              <PropertyRef Name="Uid" />
-            </Principal>
-            <Dependent Role="Patient">
-              <PropertyRef Name="uid" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Employee_Organizations">
-          <End Type="HHCModel.Organization" Role="Organization" Multiplicity="0..1" />
-          <End Type="HHCModel.Employee" Role="Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Organization">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="Oid" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-      </Schema>
+        <EntityType Name="Appointment">
+          <Key>
+            <PropertyRef Name="aid" />
+            <PropertyRef Name="eid" />
+            <PropertyRef Name="uid" />
+          </Key>
+          <Property Name="aid" Type="Int32" Nullable="false" />
+          <Property Name="orgname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="eid" Type="Int32" Nullable="false" />
+          <Property Name="empname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="dep" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="service" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="uid" Type="Int32" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="pfname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="plname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="age" Type="Int32" />
+          <Property Name="gender" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="phnum" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="timeslot" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="timeduration" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ratings" Type="Int32" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -330,7 +342,8 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HHCModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
-                <ScalarProperty Name="Oid" ColumnName="Oid" />
+                <ScalarProperty Name="Raitings" ColumnName="Raitings" />
+                <ScalarProperty Name="NofComApm" ColumnName="NofComApm" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Department" ColumnName="Department" />
                 <ScalarProperty Name="OrgName" ColumnName="OrgName" />
@@ -349,20 +362,45 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Patients">
-            <EntityTypeMapping TypeName="HHCModel.Patient">
-              <MappingFragment StoreEntitySet="Patient">
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="HHCModel.Schedule">
+              <MappingFragment StoreEntitySet="Schedule">
+                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="ratings" ColumnName="ratings" />
+                <ScalarProperty Name="noOfpndApnt" ColumnName="noOfpndApnt" />
+                <ScalarProperty Name="shift" ColumnName="shift" />
+                <ScalarProperty Name="dep" ColumnName="dep" />
+                <ScalarProperty Name="orgname" ColumnName="orgname" />
+                <ScalarProperty Name="lname" ColumnName="lname" />
+                <ScalarProperty Name="fname" ColumnName="fname" />
+                <ScalarProperty Name="eid" ColumnName="eid" />
+                <ScalarProperty Name="sid" ColumnName="sid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Appointments">
+            <EntityTypeMapping TypeName="HHCModel.Appointment">
+              <MappingFragment StoreEntitySet="Appointments">
+                <ScalarProperty Name="ratings" ColumnName="ratings" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="timeduration" ColumnName="timeduration" />
+                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="phnum" ColumnName="phnum" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="plname" ColumnName="plname" />
+                <ScalarProperty Name="pfname" ColumnName="pfname" />
+                <ScalarProperty Name="username" ColumnName="username" />
                 <ScalarProperty Name="uid" ColumnName="uid" />
-                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
-                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
-                <ScalarProperty Name="Service" ColumnName="Service" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="Age" ColumnName="Age" />
-                <ScalarProperty Name="Lname" ColumnName="Lname" />
-                <ScalarProperty Name="Fname" ColumnName="Fname" />
-                <ScalarProperty Name="pid" ColumnName="pid" />
+                <ScalarProperty Name="service" ColumnName="service" />
+                <ScalarProperty Name="dep" ColumnName="dep" />
+                <ScalarProperty Name="empname" ColumnName="empname" />
+                <ScalarProperty Name="eid" ColumnName="eid" />
+                <ScalarProperty Name="orgname" ColumnName="orgname" />
+                <ScalarProperty Name="aid" ColumnName="aid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

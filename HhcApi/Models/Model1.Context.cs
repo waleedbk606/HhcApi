@@ -30,6 +30,7 @@ namespace HhcApi.Models
         public virtual DbSet<Signup> Signups { get; set; }
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
-        public virtual DbSet<Patient> Patients { get; set; }
+        public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Appointment> Appointments { get; set; }
     }
 }

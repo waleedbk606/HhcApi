@@ -12,16 +12,18 @@ namespace HhcApi.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Signup
+    public partial class Schedule
     {
-        public int Uid { get; set; }
-        public string Fname { get; set; }
-        public string Lname { get; set; }
-        public string DOB { get; set; }
-        public string Gender { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public int sid { get; set; }
+        public int eid { get; set; }
+        public string fname { get; set; }
+        public string lname { get; set; }
+        public string orgname { get; set; }
+        public string dep { get; set; }
+        public string shift { get; set; }
+        public Nullable<int> noOfpndApnt { get; set; }
+        public Nullable<int> ratings { get; set; }
+        public string date { get; set; }
+        public string timeslot { get; set; }
     }
 }

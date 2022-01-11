@@ -5,15 +5,14 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="5aa7648852c84d549678a33dc6a48b49" Name="Diagram1">
-        <EntityTypeShape EntityType="HHCModel.Login" Width="1.5" PointX="5.875" PointY="0.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="HHCModel.Organization" Width="1.5" PointX="0.5" PointY="1.5" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Signup" Width="1.5" PointX="2.125" PointY="0.625" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Service" Width="1.5" PointX="3.375" PointY="2.75" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Employee" Width="1.5" PointX="2.625" PointY="1.375" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Patient" Width="1.5" PointX="4.25" PointY="0.625" IsExpanded="false" />
-        <AssociationConnector Association="HHCModel.FK_Patient_Signup" />
-        <AssociationConnector Association="HHCModel.FK_Employee_Organizations" />
-      </Diagram>
+        <EntityTypeShape EntityType="HHCModel.Login" Width="1.5" PointX="6" PointY="0.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Organization" Width="1.5" PointX="0.625" PointY="2.25" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Signup" Width="1.5" PointX="3.25" PointY="0.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Service" Width="1.5" PointX="1.125" PointY="0.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Employee" Width="1.5" PointX="8" PointY="0.5" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Schedule" Width="1.5" PointX="5.75" PointY="1.75" IsExpanded="false" />
+        <EntityTypeShape EntityType="HHCModel.Appointment" Width="1.5" PointX="3.75" PointY="1.75" IsExpanded="false" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

@@ -14,12 +14,6 @@ namespace HhcApi.Models
     
     public partial class Organization
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Organization()
-        {
-            this.Employees = new HashSet<Employee>();
-        }
-    
         public int id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
@@ -31,8 +25,5 @@ namespace HhcApi.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string Status { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

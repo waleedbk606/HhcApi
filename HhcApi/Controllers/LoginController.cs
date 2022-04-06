@@ -11,32 +11,7 @@ namespace HhcApi.Controllers
     {
         HHCEntities db = new HHCEntities();
 
-        [HttpGet]
-        public HttpResponseMessage GetOrg()
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Organizations.SqlQuery("Select * From Organizations where status ='Pending' ").ToList<Organization>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
+       
 
         [HttpPost]
         public HttpResponseMessage AddAppointment(Appointment user)
@@ -54,128 +29,12 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpDelete]
-        public HttpResponseMessage DeleteSchedule(int eid, String date, String time)
-        {
-            try
-            {
-                var entity = db.Schedules.Where(e => e.eid == eid).Where(e => e.date == date).Where(e => e.timeslot == time).FirstOrDefault();
-                if (entity == null)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Organization with id=" + eid.ToString() + "not found to delete");
-                }
-                else
-                {
-                    db.Schedules.Remove(entity);
-                    db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
+       
 
-        [HttpGet]
-        public HttpResponseMessage GetAppointments(int uid)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Appointments.SqlQuery("Select * From Appointments where status='Pending' and uid='" + uid + "'").ToList<Appointment>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
+       
+       
 
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetCompletedAppointments(int uid)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Appointments.SqlQuery("Select * From Appointments where status='Complete' and uid='" + uid + "'").ToList<Appointment>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetEmpAppointments(int eid)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Appointments.SqlQuery("Select * From Appointments where status='Pending' and eid='" + eid + "'").ToList<Appointment>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpPatch]
-        public HttpResponseMessage CompleteAppointment(int id)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("UPDATE Appointments SET Status = 'Complete' WHERE aid='" + id + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
+       
 
         [HttpPost]
         public HttpResponseMessage AddDatedSchedule(Schedule user)
@@ -234,93 +93,14 @@ namespace HhcApi.Controllers
 
         }
 
-        [HttpPatch]
-        public HttpResponseMessage NoLeave(int eid)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("update Schedule set NoLeave= NoLeave+1 where eid='" + eid + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
-
         [HttpGet]
-        public HttpResponseMessage GetScheduleObj(int eid)
-        {
-            try
-            {
-                var userFound = db.Schedules.FirstOrDefault(u => u.eid == eid);
-                if (userFound == null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "Invalid user Name or Password");
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, userFound);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpPatch]
-        public HttpResponseMessage UpdateRatings(int aid,string rating)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("update Appointments set ratings= '"+ rating + "' where aid='" + aid + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
-
-        [HttpPatch]
-        public HttpResponseMessage UpdatePendAppSubtract(int eid)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("update Schedule set noOfpndApnt= noOfpndApnt-1 where eid='" + eid + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetSchedule(String orgname, String dep, String shift)
+        public HttpResponseMessage GetSchedule(String orgname, String dep, String shift, String city)
         {
             try
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Schedules.SqlQuery("Select * From Schedule where orgname='" + orgname + "' and dep='" + dep + "' and shift='" + shift + "' and noOfpndApnt <3 order by ratings desc , noOfpndApnt desc ,eid desc").ToList<Schedule>();
+                    var studentList = ctx.Schedules.SqlQuery("Select * From Schedule where orgname='" + orgname + "' and dep='" + dep + "' and shift='" + shift + "' and city='" + city + "' and noOfpndApnt <3 order by ratings desc , noOfpndApnt desc ,eid desc").ToList<Schedule>();
                     if (studentList != null)
                     {
                         return Request.CreateResponse(HttpStatusCode.OK, studentList);
@@ -341,57 +121,13 @@ namespace HhcApi.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetUserDetails(String Username, String Password)
-        {
-            try
-            {
-                var userFound = db.Signups.FirstOrDefault(u => u.Username == Username && u.Password == Password);
-                if (userFound == null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "Invalid user Name or Password");
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, userFound);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetOrgDetails(String Username, String Password)
-        {
-            try
-            {
-                var userFound = db.Organizations.FirstOrDefault(u => u.Username == Username && u.Password == Password);
-                if (userFound == null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "Invalid user Name or Password");
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, userFound);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage GetIndPendingEmp()
+        public HttpResponseMessage GetAllSchedule(String orgname, String dep, String shift, String city)
         {
             try
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Employees.OrderBy(a => a.Fname).Where(a => a.Status == "Pending").ToList<Employee>();
+                    var studentList = ctx.Schedules.SqlQuery("Select * From Schedule where orgname='" + orgname + "' and dep='" + dep + "' and shift='" + shift + "' and city='" + city + "' and noOfpndApnt <3 order by ratings desc , noOfpndApnt desc ,eid desc").ToList<Schedule>();
                     if (studentList != null)
                     {
                         return Request.CreateResponse(HttpStatusCode.OK, studentList);
@@ -411,17 +147,20 @@ namespace HhcApi.Controllers
             }
         }
 
+
         [HttpGet]
-        public HttpResponseMessage GetDropOrg()
+        public HttpResponseMessage CalculateRatings(int eid)
         {
+            
             try
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Organizations.OrderBy(a => a.Name).ToList<Organization>();
-                    if (studentList != null)
+                    var AptList = ctx.Appointments.Where(a => a.eid == eid).ToList<Appointment>();
+                    if (AptList != null)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
+                      
+                        return Request.CreateResponse(HttpStatusCode.OK, AptList);
                     }
                     else
                     {
@@ -518,21 +257,7 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpPost]
-        public HttpResponseMessage AddEmpSchedule(Schedule user)
-        {
-
-            try
-            {
-                db.Schedules.Add(user);
-                db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
+       
 
         [HttpPost]
         public HttpResponseMessage AddLogin(Login reg)
@@ -551,123 +276,7 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpDelete]
-        public HttpResponseMessage DeleteOrg(int id)
-        {
-            try
-            {
-                var entity = db.Organizations.FirstOrDefault(e => e.id == id);
-                if (entity == null)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Organization with id=" + id.ToString() + "not found to delete");
-                }
-                else
-                {
-                    db.Organizations.Remove(entity);
-                    db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        public HttpResponseMessage DeletePendingEmpl(int id)
-        {
-            try
-            {
-                var entity = db.Employees.FirstOrDefault(e => e.eid == id);
-                if (entity == null)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Organization with id=" + id.ToString() + "not found to delete");
-                }
-                else
-                {
-                    db.Employees.Remove(entity);
-                    db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpPost]
-        public HttpResponseMessage AddOrg(Organization obj)
-        {
-
-            try
-            {
-
-                db.Organizations.Add(obj);
-                db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpPatch]
-        public HttpResponseMessage UpdateOrgStatus(int id)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("UPDATE Organizations SET Status = 'Accepted' WHERE id='" + id + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
-
-        [HttpPatch]
-        public HttpResponseMessage UpdateEpmlStatus(int id)
-        {
-
-            using (var ctx = new HHCEntities())
-            {
-                var updateOrg = ctx.Database.ExecuteSqlCommand("UPDATE Employee SET Status = 'Accepted' WHERE eid='" + id + "' ");
-                if (updateOrg != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateOrg);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound);
-                }
-            }
-
-        }
-
-
-        [HttpPost]
-        public HttpResponseMessage AddEmployee(Employee user)
-        {
-
-            try
-            {
-                db.Employees.Add(user);
-                db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
+      
 
         [HttpGet]
         public HttpResponseMessage ViewEmp()
@@ -714,33 +323,7 @@ namespace HhcApi.Controllers
 
         //}
 
-        [HttpGet]
-        public HttpResponseMessage GetEmp(int id)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Employees
-                                        .SqlQuery("Select * from Employee where eid='" + id + "'").ToList<Employee>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
+       
 
         [HttpGet]
         public HttpResponseMessage GetEmpByUsername(String Username, String Password)
@@ -769,33 +352,7 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpGet]
-        public HttpResponseMessage DepDropOrg(String dep, String org)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Employees
-                                        .SqlQuery("Select * from Employee where Department='" + dep + "' and OrgName='" + org + "' and status='Accepted'").ToList<Employee>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
+       
 
         [HttpGet]
         public HttpResponseMessage IndEmp(String dep, String org)
@@ -825,55 +382,8 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpGet]
-        public HttpResponseMessage IndEmphhc(String dep)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Employees
-                                        .SqlQuery("Select * from Employee where Department='" + dep + "' and OrgName='Independent'and Status='Accepted'").ToList<Employee>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
 
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
-
-        [HttpPost]
-        public HttpResponseMessage ModifyEmployee(Employee obj)
-        {
-            try
-            {
-                var data = db.Employees.Find(obj.eid);
-                if (data == null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "Employee Does Not exist");
-                }
-                db.Entry(data).CurrentValues.SetValues(obj);
-                db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK, data);
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
+       
 
         [HttpDelete]
         public HttpResponseMessage DeleteEmp(int id)
@@ -898,78 +408,12 @@ namespace HhcApi.Controllers
             }
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetDepartments(String Org)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Employees.OrderBy(a => a.OrgName).Where(m => m.OrgName == Org).GroupBy(m => m.Department).Select(x => x.FirstOrDefault()).ToList();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
+       
 
-                }
 
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+       
 
-            }
-        }
 
-        [HttpPost]
-        public HttpResponseMessage AddService(Service obj)
-        {
-
-            try
-            {
-                db.Services.Add(obj);
-                db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.OK, obj);
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        public HttpResponseMessage ViewServices(String Org)
-        {
-            try
-            {
-                using (var ctx = new HHCEntities())
-                {
-                    var studentList = ctx.Services
-                                        .SqlQuery("select * from services where Organization='" + Org + "'")
-                                        .ToList<Service>();
-                    if (studentList != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
-                    }
-                    else
-                    {
-
-                        return Request.CreateResponse(HttpStatusCode.NotFound);
-                    }
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-
-            }
-        }
 
         //[HttpGet]
         //public HttpResponseMessage ViewSerOrg()
@@ -1000,29 +444,7 @@ namespace HhcApi.Controllers
         //    }
         //}
 
-        [HttpDelete]
-        public HttpResponseMessage DeleteService(int id)
-        {
-            try
-            {
-                var entity = db.Services.FirstOrDefault(e => e.id == id);
-                if (entity == null)
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Employee with id=" + id.ToString() + "not found to delete");
-                }
-                else
-                {
-                    db.Services.Remove(entity);
-                    db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
+      
 
         [HttpPost]
         public HttpResponseMessage UpdateService(Service obj)

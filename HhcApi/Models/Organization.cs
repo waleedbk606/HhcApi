@@ -25,5 +25,8 @@ namespace HhcApi.Models
         public string Username { get; set; }
         public string Password { get; set; }
         public string Status { get; set; }
+        public string Lat { get; set; }
+        public string Long { get; set; }
+        public string Radius { get; set; }
     }
 }

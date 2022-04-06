@@ -21,10 +21,8 @@ namespace HhcApi.Models
         public string orgname { get; set; }
         public string dep { get; set; }
         public string shift { get; set; }
-        public Nullable<int> noOfpndApnt { get; set; }
         public Nullable<double> ratings { get; set; }
         public string date { get; set; }
         public string timeslot { get; set; }
-        public Nullable<int> NoLeave { get; set; }
     }
 }

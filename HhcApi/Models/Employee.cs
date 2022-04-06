@@ -29,7 +29,9 @@ namespace HhcApi.Models
         public string OrgName { get; set; }
         public string Department { get; set; }
         public string Status { get; set; }
-        public Nullable<int> NofComApm { get; set; }
         public Nullable<int> Raitings { get; set; }
+        public string Lat { get; set; }
+        public string Long { get; set; }
+        public string Radius { get; set; }
     }
 }

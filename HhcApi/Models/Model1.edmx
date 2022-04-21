@@ -47,8 +47,20 @@
           <Property Name="Password" Type="nvarchar(max)" />
           <Property Name="OrgName" Type="nvarchar(max)" />
           <Property Name="Department" Type="nvarchar(max)" />
+          <Property Name="Shift" Type="nvarchar(max)" />
+          <Property Name="City" Type="nvarchar(max)" />
           <Property Name="Status" Type="nvarchar(max)" />
           <Property Name="Raitings" Type="int" />
+          <Property Name="Lat" Type="nvarchar(max)" />
+          <Property Name="Long" Type="nvarchar(max)" />
+          <Property Name="Radius" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Locations">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrgName" Type="nvarchar(max)" />
           <Property Name="Lat" Type="nvarchar(max)" />
           <Property Name="Long" Type="nvarchar(max)" />
           <Property Name="Radius" Type="nvarchar(max)" />
@@ -58,9 +70,9 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Username" Type="nchar" MaxLength="20" Nullable="false" />
+          <Property Name="Username" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Password" Type="nchar" MaxLength="8" Nullable="false" />
-          <Property Name="Role" Type="nchar" MaxLength="10" />
+          <Property Name="Role" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="Organizations">
           <Key>
@@ -133,6 +145,7 @@
         <EntityContainer Name="HHCModelStoreContainer">
           <EntitySet Name="Appointments" EntityType="Self.Appointments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Locations" EntityType="Self.Locations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Login" EntityType="Self.Login" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Organizations" EntityType="Self.Organizations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Schedule" EntityType="Self.Schedule" Schema="dbo" store:Type="Tables" />
@@ -149,9 +162,9 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Username" Type="String" MaxLength="20" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="Username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Password" Type="String" MaxLength="8" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="Role" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Role" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityContainer Name="HHCEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Logins" EntityType="Self.Login" />
@@ -162,6 +175,7 @@
           <EntitySet Name="Employees" EntityType="HHCModel.Employee" />
           <EntitySet Name="Organizations" EntityType="HHCModel.Organization" />
           <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
+          <EntitySet Name="Locations" EntityType="HHCModel.Location" />
           </EntityContainer>
         <EntityType Name="Signup">
           <Key>
@@ -244,6 +258,8 @@
           <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Shift" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Organization">
           <Key>
@@ -278,6 +294,16 @@
           <Property Name="ratings" Type="Double" />
           <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="timeslot" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrgName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -360,6 +386,8 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HHCModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Shift" ColumnName="Shift" />
                 <ScalarProperty Name="Radius" ColumnName="Radius" />
                 <ScalarProperty Name="Long" ColumnName="Long" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />
@@ -415,6 +443,17 @@
                 <ScalarProperty Name="fname" ColumnName="fname" />
                 <ScalarProperty Name="eid" ColumnName="eid" />
                 <ScalarProperty Name="sid" ColumnName="sid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="HHCModel.Location">
+              <MappingFragment StoreEntitySet="Locations">
+                <ScalarProperty Name="Radius" ColumnName="Radius" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="OrgName" ColumnName="OrgName" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

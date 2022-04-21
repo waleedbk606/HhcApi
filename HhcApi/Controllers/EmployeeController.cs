@@ -130,6 +130,7 @@ namespace HhcApi.Controllers
 
             }
         }
+   
 
         [HttpPost]
         public HttpResponseMessage AddEmpSchedule(Schedule user)
@@ -147,6 +148,21 @@ namespace HhcApi.Controllers
             }
         }
 
+        [HttpPost]
+        public HttpResponseMessage AddEmployee(Employee user)
+        {
+
+            try
+            {
+                db.Employees.Add(user);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
         [HttpPatch]
         public HttpResponseMessage NoLeave(int eid)
         {

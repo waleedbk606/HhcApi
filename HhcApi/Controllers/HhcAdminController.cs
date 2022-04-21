@@ -12,14 +12,58 @@ namespace HhcApi.Controllers
     {
         HHCEntities db = new HHCEntities();
 
+
+        [HttpGet]
+        public HttpResponseMessage GetLocations()   
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    var studentList = ctx.Locations.OrderBy(a => a.OrgName).ToList<Location>();
+                    if (studentList != null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NotFound);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
         [HttpPost]
         public HttpResponseMessage AddOrg(Organization obj)
         {
 
             try
             {
-
                 db.Organizations.Add(obj);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage AddLocations(Location obj)
+        {
+
+            try
+            {
+
+                db.Locations.Add(obj);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

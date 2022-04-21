@@ -33,5 +33,6 @@ namespace HhcApi.Models
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Location> Locations { get; set; }
     }
 }

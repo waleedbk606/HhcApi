@@ -104,8 +104,8 @@ namespace HhcApi.Controllers
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Employees
-                                        .SqlQuery("Select * from Employee where Department='" + dep + "' and OrgName='" + org + "' and status='Accepted'").ToList<Employee>();
+                    var studentList = ctx.Employees.Where(x=>(x.Department == dep && x.OrgName == org && x.Status == "Accepted")).ToList<Employee>();
+                                        
                     if (studentList != null)
                     {
                         return Request.CreateResponse(HttpStatusCode.OK, studentList);

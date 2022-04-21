@@ -33,5 +33,7 @@ namespace HhcApi.Models
         public string Lat { get; set; }
         public string Long { get; set; }
         public string Radius { get; set; }
+        public string Shift { get; set; }
+        public string City { get; set; }
     }
 }

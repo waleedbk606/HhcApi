@@ -46,6 +46,7 @@
           <Property Name="Username" Type="nvarchar(max)" />
           <Property Name="Password" Type="nvarchar(max)" />
           <Property Name="OrgName" Type="nvarchar(max)" />
+          <Property Name="Zone" Type="nvarchar(max)" />
           <Property Name="Department" Type="nvarchar(max)" />
           <Property Name="Shift" Type="nvarchar(max)" />
           <Property Name="City" Type="nvarchar(max)" />
@@ -64,6 +65,7 @@
           <Property Name="Lat" Type="nvarchar(max)" />
           <Property Name="Long" Type="nvarchar(max)" />
           <Property Name="Radius" Type="nvarchar(max)" />
+          <Property Name="Zones" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -260,6 +262,7 @@
           <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Shift" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Zone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Organization">
           <Key>
@@ -289,6 +292,7 @@
           <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Zones" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Schedule">
           <Key>
@@ -386,6 +390,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HHCModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="Zone" ColumnName="Zone" />
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="Shift" ColumnName="Shift" />
                 <ScalarProperty Name="Radius" ColumnName="Radius" />
@@ -433,6 +438,7 @@
           <EntitySetMapping Name="Locations">
             <EntityTypeMapping TypeName="HHCModel.Location">
               <MappingFragment StoreEntitySet="Locations">
+                <ScalarProperty Name="Zones" ColumnName="Zones" />
                 <ScalarProperty Name="Radius" ColumnName="Radius" />
                 <ScalarProperty Name="Long" ColumnName="Long" />
                 <ScalarProperty Name="Lat" ColumnName="Lat" />

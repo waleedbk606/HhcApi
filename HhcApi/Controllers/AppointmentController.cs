@@ -50,7 +50,7 @@ namespace HhcApi.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetAvailableEmp(string orgname, string dep, string shift,string lat,string lng,string date,string time)
+        public HttpResponseMessage GetIndAvailableEmp(string orgname, string dep, string shift,string lat,string lng,string date,string time)
         {   
             try
             {
@@ -59,7 +59,7 @@ namespace HhcApi.Controllers
                     double Distance = 0.0;
                     string reaseon = "";
                     bool Avaliblity = false;
-                    List<Employee> AvaliableEmployee = new List<Employee>();
+                   List<Employee> AvaliableEmployee = new List<Employee>();
                     List<Employee> UnAvaliableEmployee = new List<Employee>();
                     List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == orgname) && (x.Department == dep) && (x.Shift == shift)).ToList<Employee>();
                     if (EmployeeList.Count == 0)
@@ -76,7 +76,10 @@ namespace HhcApi.Controllers
                             if (Distance > double.Parse(EmployeeList[i].Radius))
                             {
                                 Avaliblity = false;
+                                EmployeeList[i].Availablity = Avaliblity;
+                                EmployeeList[i].Distance = Distance.ToString();
                                 UnAvaliableEmployee.Add(EmployeeList[i]);
+
                             }
                             else
                             {
@@ -84,6 +87,9 @@ namespace HhcApi.Controllers
                                 List<Schedule> EmployeeSchedule = ctx.Schedules.Where(x => x.eid == eid).ToList<Schedule>();
                                 if (EmployeeSchedule.Count == 0)
                                 {
+                                    Avaliblity = true;
+                                    EmployeeList[i].Availablity = Avaliblity;
+                                    EmployeeList[i].Distance = Distance.ToString();
                                     AvaliableEmployee.Add(EmployeeList[i]);
                                 }
                                 else
@@ -118,10 +124,14 @@ namespace HhcApi.Controllers
                                     }
                                     if (Avaliblity == true)
                                     {
+                                        EmployeeList[i].Availablity = Avaliblity;
+                                        EmployeeList[i].Distance = Distance.ToString();
                                         AvaliableEmployee.Add(EmployeeList[i]);
                                     }
                                     else
                                     {
+                                        EmployeeList[i].Availablity = Avaliblity;
+                                        EmployeeList[i].Distance = Distance.ToString();
                                         UnAvaliableEmployee.Add(EmployeeList[i]);
                                     }
 
@@ -139,6 +149,119 @@ namespace HhcApi.Controllers
                         }
                     }
                     
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+
+        [HttpGet]
+        public HttpResponseMessage GetOrgAvailableEmp(string orgname, string dep, string shift, string lat, string lng, string date, string time)
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    double Distance = 0.0;
+                    string reaseon = "";
+                    bool Avaliblity = false;
+                    string Zone = "";
+                    List<Employee> AvaliableEmployee = new List<Employee>();
+                    List<Employee> UnAvaliableEmployee = new List<Employee>();
+                    List<Location> OrgLoations = ctx.Locations.Where(x => x.OrgName == orgname).ToList<Location>();
+
+                    for (int i = 0; i < OrgLoations.Count; i++)
+                    {
+                        Distance = distance(double.Parse(OrgLoations[i].Lat), double.Parse(lat), double.Parse(OrgLoations[i].Long), double.Parse(lng));
+                        if (Distance < double.Parse(OrgLoations[i].Radius))
+                        {
+                            Zone = OrgLoations[i].Zones;
+                            break;
+                        }
+                    }
+
+                    List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == orgname) && (x.Zone == Zone) && (x.Department == dep) && (x.Shift == shift)).ToList<Employee>();
+                    if (EmployeeList.Count == 0)
+                    {
+                        reaseon = "No Employee in available in this Organization/shift/department";
+                        return Request.CreateResponse(HttpStatusCode.OK, reaseon);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < EmployeeList.Count; i++)
+                        {
+               
+                                int eid = EmployeeList[i].eid;
+                                List<Schedule> EmployeeSchedule = ctx.Schedules.Where(x => x.eid == eid).ToList<Schedule>();
+                                if (EmployeeSchedule.Count == 0)
+                                {
+                                    Avaliblity = true;
+                                    EmployeeList[i].Availablity = Avaliblity;
+                                    EmployeeList[i].Distance = Distance.ToString();
+                                    AvaliableEmployee.Add(EmployeeList[i]);
+                                }
+                                else
+                                {
+                                    for (int j = 0; j < EmployeeSchedule.Count; j++)
+                                    {
+                                        if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time)
+                                        {
+                                            Avaliblity = false;
+                                            reaseon = "Employee is busy in given date and time";
+                                            //UnAvaliableEmployee.Add(EmployeeList[i]);
+                                            break;
+                                        }
+                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == "Leave")
+                                        {
+                                            Avaliblity = false;
+                                            reaseon = "Employee is on full-day leave";
+                                            //UnAvaliableEmployee.Add(EmployeeList[i]);
+                                            break;
+                                        }
+                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time + "L")
+                                        {
+                                            Avaliblity = false;
+                                            reaseon = "Employee is on leave at given time slot";
+                                            //UnAvaliableEmployee.Add(EmployeeList[i]);
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Avaliblity = true;
+                                        }
+                                    }
+                                    if (Avaliblity == true)
+                                    {
+                                        EmployeeList[i].Availablity = Avaliblity;
+                                        EmployeeList[i].Distance = Distance.ToString();
+                                        AvaliableEmployee.Add(EmployeeList[i]);
+                                    }
+                                    else
+                                    {
+                                        EmployeeList[i].Availablity = Avaliblity;
+                                        EmployeeList[i].Distance = Distance.ToString();
+                                        UnAvaliableEmployee.Add(EmployeeList[i]);
+                                    }
+
+                                }
+                           
+                        }
+                        if (AvaliableEmployee.Count > 0)
+                        {
+                            AvaliableEmployee.OrderByDescending(i => i.Raitings);
+                            return Request.CreateResponse(HttpStatusCode.OK, (AvaliableEmployee, UnAvaliableEmployee));
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, (reaseon, UnAvaliableEmployee));
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)

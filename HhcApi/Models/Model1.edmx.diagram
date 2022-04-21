@@ -10,10 +10,10 @@
         <EntityTypeShape EntityType="HHCModel.Service" Width="1.5" PointX="1.125" PointY="0.5" IsExpanded="false" />
         <EntityTypeShape EntityType="HHCModel.sysdiagram" Width="1.5" PointX="3.375" PointY="3.75" IsExpanded="false" />
         <EntityTypeShape EntityType="HHCModel.Appointment" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Employee" Width="1.5" PointX="0.75" PointY="5.75" />
+        <EntityTypeShape EntityType="HHCModel.Employee" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="false" />
         <EntityTypeShape EntityType="HHCModel.Organization" Width="1.5" PointX="5.75" PointY="1.75" IsExpanded="false" />
         <EntityTypeShape EntityType="HHCModel.Location" Width="1.5" PointX="5.375" PointY="3.75" IsExpanded="false" />
-        <EntityTypeShape EntityType="HHCModel.Schedule" Width="1.5" PointX="3.375" PointY="5.75" />
+        <EntityTypeShape EntityType="HHCModel.Schedule" Width="1.5" PointX="3.375" PointY="5.75" IsExpanded="false" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

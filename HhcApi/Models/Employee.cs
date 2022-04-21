@@ -35,5 +35,8 @@ namespace HhcApi.Models
         public string Radius { get; set; }
         public string Shift { get; set; }
         public string City { get; set; }
+        public string Zone { get; set; }
+        public bool Availablity { get; set; }
+        public string Distance { get; set; }
     }
 }

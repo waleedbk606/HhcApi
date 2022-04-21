@@ -174,8 +174,8 @@
           <EntitySet Name="Appointments" EntityType="HHCModel.Appointment" />
           <EntitySet Name="Employees" EntityType="HHCModel.Employee" />
           <EntitySet Name="Organizations" EntityType="HHCModel.Organization" />
-          <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
           <EntitySet Name="Locations" EntityType="HHCModel.Location" />
+          <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
           </EntityContainer>
         <EntityType Name="Signup">
           <Key>
@@ -280,6 +280,16 @@
           <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrgName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="sid" />
@@ -294,16 +304,6 @@
           <Property Name="ratings" Type="Double" />
           <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="timeslot" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="Location">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="OrgName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -410,23 +410,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Schedules">
-            <EntityTypeMapping TypeName="HHCModel.Schedule">
-              <MappingFragment StoreEntitySet="Schedule">
-                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
-                <ScalarProperty Name="date" ColumnName="date" />
-                <ScalarProperty Name="ratings" ColumnName="ratings" />
-                <ScalarProperty Name="noOfpndApnt" ColumnName="noOfpndApnt" />
-                <ScalarProperty Name="shift" ColumnName="shift" />
-                <ScalarProperty Name="dep" ColumnName="dep" />
-                <ScalarProperty Name="orgname" ColumnName="orgname" />
-                <ScalarProperty Name="lname" ColumnName="lname" />
-                <ScalarProperty Name="fname" ColumnName="fname" />
-                <ScalarProperty Name="eid" ColumnName="eid" />
-                <ScalarProperty Name="sid" ColumnName="sid" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Organizations">
             <EntityTypeMapping TypeName="HHCModel.Organization">
               <MappingFragment StoreEntitySet="Organizations">
@@ -447,6 +430,17 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Locations">
+            <EntityTypeMapping TypeName="HHCModel.Location">
+              <MappingFragment StoreEntitySet="Locations">
+                <ScalarProperty Name="Radius" ColumnName="Radius" />
+                <ScalarProperty Name="Long" ColumnName="Long" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="OrgName" ColumnName="OrgName" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Schedules">
             <EntityTypeMapping TypeName="HHCModel.Schedule">
               <MappingFragment StoreEntitySet="Schedule">
@@ -460,17 +454,6 @@
                 <ScalarProperty Name="fname" ColumnName="fname" />
                 <ScalarProperty Name="eid" ColumnName="eid" />
                 <ScalarProperty Name="sid" ColumnName="sid" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Locations">
-            <EntityTypeMapping TypeName="HHCModel.Location">
-              <MappingFragment StoreEntitySet="Locations">
-                <ScalarProperty Name="Radius" ColumnName="Radius" />
-                <ScalarProperty Name="Long" ColumnName="Long" />
-                <ScalarProperty Name="Lat" ColumnName="Lat" />
-                <ScalarProperty Name="OrgName" ColumnName="OrgName" />
-                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

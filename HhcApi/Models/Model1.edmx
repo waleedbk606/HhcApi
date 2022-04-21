@@ -410,6 +410,23 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="HHCModel.Schedule">
+              <MappingFragment StoreEntitySet="Schedule">
+                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="ratings" ColumnName="ratings" />
+                <ScalarProperty Name="noOfpndApnt" ColumnName="noOfpndApnt" />
+                <ScalarProperty Name="shift" ColumnName="shift" />
+                <ScalarProperty Name="dep" ColumnName="dep" />
+                <ScalarProperty Name="orgname" ColumnName="orgname" />
+                <ScalarProperty Name="lname" ColumnName="lname" />
+                <ScalarProperty Name="fname" ColumnName="fname" />
+                <ScalarProperty Name="eid" ColumnName="eid" />
+                <ScalarProperty Name="sid" ColumnName="sid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Organizations">
             <EntityTypeMapping TypeName="HHCModel.Organization">
               <MappingFragment StoreEntitySet="Organizations">

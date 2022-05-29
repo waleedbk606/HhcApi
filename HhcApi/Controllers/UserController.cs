@@ -12,17 +12,117 @@ namespace HhcApi.Controllers
     {
         HHCEntities db = new HHCEntities();
 
+
         [HttpGet]
-        public HttpResponseMessage GetDropOrg()
+        public HttpResponseMessage GetAllServices(string OrgOrInd)  
         {
             try
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Organizations.Where(a => a.Status == "Accepted").OrderBy(a => a.Name).ToList<Organization>();
+                    List<string> service = new List<string>();
+                    if (OrgOrInd == "Organization")
+                    {
+                        var studentList = ctx.Services.Where(a => a.Organization != "Independent").OrderBy(a => a.Staff).Distinct().ToList<Service>();  
+                        service.Add("-Select Service-");
+                        if (studentList != null)
+                        {
+                            for (int i = 0; i < studentList.Count; i++)
+                            {
+                                string Orgname = studentList[i].Name.ToString();
+                                service.Add(Orgname);
+                            }
+                           // return Request.CreateResponse(HttpStatusCode.OK, service);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.NotFound);
+                        }
+                    }
+                    else if(OrgOrInd == "Independent")
+                    {
+                        var studentList = ctx.Services.Where(a => a.Organization == "Independent").OrderBy(a => a.Staff).Distinct().ToList<Service>();
+                    
+                        service.Add("-Select Service-");
+                        if (studentList != null)
+                        {
+                            for (int i = 0; i < studentList.Count; i++)
+                            {
+                                string Orgname = studentList[i].Name.ToString();
+                                service.Add(Orgname);
+                            }
+                           
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.NotFound);
+                        }
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, service);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+
+        [HttpGet]
+        public HttpResponseMessage GetDropCity()
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    var studentList = ctx.Employees.Where(a => (a.Status == "Accepted" )).OrderBy(a => a.City).Distinct().ToList<Employee>();
+                    List<string> City = new List<string>();
+                    City.Add("---Select City---");
                     if (studentList != null)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
+                        for (int i = 0; i < studentList.Count; i++)
+                        {
+                            string cityname = studentList[i].City.ToString();
+                            City.Add(cityname);
+                        }
+                        return Request.CreateResponse(HttpStatusCode.OK, City.Distinct());
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NotFound);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+       
+        [HttpGet]
+        public HttpResponseMessage GetDropOrg(string city)
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    var studentList = ctx.Organizations.Where(a =>( a.Status == "Accepted" && a.City == city)).OrderBy(a => a.Name).Distinct().ToList<Organization>();
+                    List<string> Org = new List<string>();
+                    Org.Add("-Select Organization-");
+                    if (studentList != null)
+                    {
+                        for (int i = 0; i < studentList.Count; i++)
+                        {
+                            string Orgname = studentList[i].Name.ToString();
+                            Org.Add(Orgname);
+                        }
+                        return Request.CreateResponse(HttpStatusCode.OK, Org);
                     }
                     else
                     {
@@ -40,16 +140,23 @@ namespace HhcApi.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetDepartments(String Org)
+        public HttpResponseMessage GetDepartments(string Org,string city)
         {
             try
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Employees.Where(m => m.OrgName == Org).GroupBy(m => m.Department).Select(x => x.FirstOrDefault()).ToList();
+                    var studentList = ctx.Employees.Where(m => (m.OrgName == Org && m.City == city)).GroupBy(m => m.Department).Select(x => x.FirstOrDefault()).ToList();
+                    List<string> Dep = new List<string>();
+                    Dep.Add("-Select Staff-");
                     if (studentList != null)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
+                        for (int i = 0; i < studentList.Count; i++)
+                        {
+                            string departments = studentList[i].Department.ToString();
+                            Dep.Add(departments);
+                        }
+                        return Request.CreateResponse(HttpStatusCode.OK, Dep);
                     }
                     else
                     {
@@ -73,12 +180,17 @@ namespace HhcApi.Controllers
             {
                 using (var ctx = new HHCEntities())
                 {
-                    var studentList = ctx.Services
-                                        .SqlQuery("select * from services where Organization='" + Org + "' and Staff='" + dep + "'")
-                                        .ToList<Service>();
+                    var studentList = ctx.Services.SqlQuery("select * from services where Organization='" + Org + "' and Staff='" + dep + "'").ToList<Service>();
+                    List<string> service = new List<string>();
+                    service.Add("-Select Service-");
                     if (studentList != null)
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, studentList);
+                        for (int i = 0; i < studentList.Count; i++)
+                        {
+                            string departments = studentList[i].Name.ToString();
+                            service.Add(departments);
+                        }
+                        return Request.CreateResponse(HttpStatusCode.OK, service);
                     }
                     else
                     {

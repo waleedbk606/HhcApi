@@ -50,7 +50,45 @@ namespace HhcApi.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetIndAvailableEmp(string orgname, string dep, string shift,string lat,string lng,string date,string time)
+
+        public HttpResponseMessage GetCalculatedOrg(string service,string lat,string lng)
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    double Distance = 0.0;
+                    List<string> orgName= new List<string>();
+                    orgName.Add("-Select Organization-");
+                    var serviceProviders = ctx.Services.Where(x => (x.Name == service) && (x.Organization != "Independent")).ToList<Service>();
+                    for (int i = 0; i < serviceProviders.Count; i++)
+                    {
+                        // Organization org = ctx.Organizations.Where(x => x.Name == serviceProviders[i].Organization).FirstOrDefault();
+                        string OrgName = serviceProviders[i].Organization;
+                        List<Location> OrgLoationLocations = ctx.Locations.Where(x => x.OrgName == OrgName).ToList<Location>();
+                        for (int j = 0; j < OrgLoationLocations.Count; j++)
+                        {
+                            Distance = distance(double.Parse(OrgLoationLocations[j].Lat), double.Parse(lat), double.Parse(OrgLoationLocations[j].Long), double.Parse(lng));
+                            if (Distance < double.Parse(OrgLoationLocations[j].Radius))
+                            {
+                                orgName.Add(OrgLoationLocations[j].OrgName);
+                                break;
+                            }
+                        }
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.OK, (orgName));
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        
+        }
+        [HttpPost]
+        public HttpResponseMessage GetIndAvailableEmp(AppointmentRequestDTO appointmentRequestDTO)
         {   
             try
             {
@@ -59,19 +97,19 @@ namespace HhcApi.Controllers
                     double Distance = 0.0;
                     string reaseon = "";
                     bool Avaliblity = false;
-                   List<Employee> AvaliableEmployee = new List<Employee>();
+                    List<Employee> AvaliableEmployee = new List<Employee>();
                     List<Employee> UnAvaliableEmployee = new List<Employee>();
-                    List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == orgname) && (x.Department == dep) && (x.Shift == shift)).ToList<Employee>();
+                    List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == appointmentRequestDTO.orgname) && (x.Shift == appointmentRequestDTO.shift)).ToList<Employee>();
                     if (EmployeeList.Count == 0)
                     {
                         reaseon = "No Employee in available in this Organization/shift/department";
-                        return Request.CreateResponse(HttpStatusCode.OK, reaseon);
+                        return Request.CreateResponse(HttpStatusCode.OK, (AvaliableEmployee, UnAvaliableEmployee));
                     }
                     else
                     { 
                         for (int i = 0; i < EmployeeList.Count; i++)
                         {
-                             Distance = distance(double.Parse(EmployeeList[i].Lat), double.Parse(lat), double.Parse(EmployeeList[i].Long), double.Parse(lng));
+                             Distance = distance(double.Parse(EmployeeList[i].Lat), double.Parse(appointmentRequestDTO.lat), double.Parse(EmployeeList[i].Long), double.Parse(appointmentRequestDTO.lng));
                            
                             if (Distance > double.Parse(EmployeeList[i].Radius))
                             {
@@ -96,21 +134,21 @@ namespace HhcApi.Controllers
                                 {
                                     for (int j = 0; j < EmployeeSchedule.Count; j++)
                                     {
-                                        if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time)
+                                        if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == appointmentRequestDTO.time)
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is busy in given date and time";
                                             //UnAvaliableEmployee.Add(EmployeeList[i]);
                                             break;
                                         }
-                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == "Leave")
+                                        else if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == "Leave")
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is on full-day leave";
                                             //UnAvaliableEmployee.Add(EmployeeList[i]);
                                             break;
                                         }
-                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time + "L")
+                                        else if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == appointmentRequestDTO.time + "L")
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is on leave at given time slot";
@@ -145,7 +183,7 @@ namespace HhcApi.Controllers
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, (reaseon, UnAvaliableEmployee));
+                            return Request.CreateResponse(HttpStatusCode.OK, (AvaliableEmployee, UnAvaliableEmployee));
                         }
                     }
                     
@@ -159,9 +197,147 @@ namespace HhcApi.Controllers
             }
         }
 
+        [HttpPost]
+        public HttpResponseMessage IndRepetedAppointment(RepeatedAppointmentDTO repeatedAppointmentDTO)
+        {
+            try
+            {   
+                using (var ctx = new HHCEntities())
+                {
+                    double Distance = 0.0;  
+                    string reaseon = "";
+                    bool Avaliblity = false;
+                    Employee selectedEmp = new Employee();
+                    Appointment addAppointment = new Appointment();
+                    List<RepeatedResponseDTO> response = new List<RepeatedResponseDTO>();
+                    addAppointment.orgname = repeatedAppointmentDTO.orgname;
+                    addAppointment.service = repeatedAppointmentDTO.service;
+                    addAppointment.uid = int.Parse(repeatedAppointmentDTO.uid);
+                    addAppointment.username = repeatedAppointmentDTO.username;
+                    addAppointment.pfname = repeatedAppointmentDTO.pfname;
+                    addAppointment.plname = repeatedAppointmentDTO.plname;
+                    addAppointment.gender = repeatedAppointmentDTO.gender;
+                    addAppointment.phnum = repeatedAppointmentDTO.phnum;
+                    addAppointment.timeslot = repeatedAppointmentDTO.time;
+                    addAppointment.timeduration = repeatedAppointmentDTO.timeduration;
+                    addAppointment.status = repeatedAppointmentDTO.status;
+                    addAppointment.ratings = int.Parse(repeatedAppointmentDTO.ratings);
+                    Schedule addSchedule = new Schedule();
+                    addSchedule.orgname = repeatedAppointmentDTO.orgname;
+                    addSchedule.timeslot = repeatedAppointmentDTO.time;
+                    addSchedule.shift = repeatedAppointmentDTO.shift;
+                    addSchedule.ratings = double.Parse(repeatedAppointmentDTO.ratings);
+                    var ServiceList = ctx.Services.Where(x => x.Name == repeatedAppointmentDTO.service).ToList<Service>();
+                    var Dep = ServiceList.FirstOrDefault().Staff;
+                    addAppointment.dep = Dep;
+                    addSchedule.dep = Dep;
+                    List<Employee> EmployeeList = ctx.Employees.OrderByDescending(x => x.Raitings).Where(x => (x.OrgName == repeatedAppointmentDTO.orgname) && (x.Department == Dep ) && (x.Shift == repeatedAppointmentDTO.shift)).ToList<Employee>();
+                    if (EmployeeList.Count == 0)
+                    {
+                        reaseon = "No Employee in available in this Organization/shift/department";
+                        return Request.CreateResponse(HttpStatusCode.OK, (reaseon));
+                    }
+                    else
+                    {
+                        for (int i = 0; i < EmployeeList.Count; i++)
+                        {
+                            Distance = distance(double.Parse(EmployeeList[i].Lat), double.Parse(repeatedAppointmentDTO.lat), double.Parse(EmployeeList[i].Long), double.Parse(repeatedAppointmentDTO.lng));
 
-        [HttpGet]
-        public HttpResponseMessage GetOrgAvailableEmp(string orgname, string dep, string shift, string lat, string lng, string date, string time)
+                            if (Distance > double.Parse(EmployeeList[i].Radius))
+                            {
+                                Avaliblity = false;
+                                EmployeeList[i].Availablity = Avaliblity;
+                                EmployeeList[i].Distance = Distance.ToString();
+                               // UnAvaliableEmployee.Add(EmployeeList[i]);
+
+                            }
+                            else
+                            {
+                                int eid = EmployeeList[i].eid;
+                                List<Schedule> EmployeeSchedule = ctx.Schedules.Where(x => x.eid == eid).ToList<Schedule>();
+                                if (EmployeeSchedule.Count == 0)
+                                {
+                                    Avaliblity = true;
+                                    EmployeeList[i].Availablity = Avaliblity;
+                                    EmployeeList[i].Distance = Distance.ToString();
+                                   // AvaliableEmployee.Add(EmployeeList[i]);
+                                    selectedEmp = EmployeeList[i];
+                                    addAppointment.eid = selectedEmp.eid;
+                                    addSchedule.eid = selectedEmp.eid;
+                                    addSchedule.fname = selectedEmp.Fname;
+                                    addSchedule.lname = selectedEmp.Lname;
+                                    addAppointment.empname = selectedEmp.Fname +" "+ selectedEmp.Lname;
+                                    for (int w = 0; w < repeatedAppointmentDTO.date.Count; w++)
+                                    {
+                                        addAppointment.date = repeatedAppointmentDTO.date[w];
+                                        addSchedule.date = repeatedAppointmentDTO.date[w];
+                                        db.Appointments.Add(addAppointment);
+                                        response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
+                                        db.Schedules.Add(addSchedule);
+                                        db.SaveChanges();
+                                        repeatedAppointmentDTO.date[w] = "Booked";
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 0; j < repeatedAppointmentDTO.date.Count ; j++)
+                                    {
+                                            for (int q = 0; q < EmployeeSchedule.Count; q++)
+                                            {
+                                                if (EmployeeSchedule[q].date == repeatedAppointmentDTO.date[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
+                                                {
+                                                    Avaliblity = false;
+                                                    //UnAvaliableEmployee.Add(EmployeeList[i]);
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    Avaliblity = true;
+                                                }
+                                            }
+                                            if (Avaliblity == true)
+                                            {
+                                                EmployeeList[i].Availablity = Avaliblity;
+                                                EmployeeList[i].Distance = Distance.ToString();
+                                                // AvaliableEmployee.Add(EmployeeList[i]);
+                                                selectedEmp = EmployeeList[i];
+                                                addAppointment.eid = selectedEmp.eid;
+                                                addSchedule.eid = selectedEmp.eid;
+                                                addSchedule.fname = selectedEmp.Fname;
+                                                addSchedule.lname = selectedEmp.Lname;
+                                                addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
+                                                addAppointment.date = repeatedAppointmentDTO.date[j];
+                                                addSchedule.date = repeatedAppointmentDTO.date[j];
+                                                db.Appointments.Add(addAppointment);
+                                                response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
+                                                db.Schedules.Add(addSchedule);
+                                                db.SaveChanges();
+                                                repeatedAppointmentDTO.date[j] = "Booked";
+                                            }
+                                            else
+                                            {
+                                            response.Add(new RepeatedResponseDTO() { date = repeatedAppointmentDTO.date[j], time = repeatedAppointmentDTO.time, employee = "No Employee Available", status = "Unbooked" });
+                                            continue;
+                                            }
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, (response));
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage OrgRepetedAppointment(RepeatedAppointmentDTO repeatedAppointmentDTO)
         {
             try
             {
@@ -170,26 +346,168 @@ namespace HhcApi.Controllers
                     double Distance = 0.0;
                     string reaseon = "";
                     bool Avaliblity = false;
-                    string Zone = "";
-                    List<Employee> AvaliableEmployee = new List<Employee>();
-                    List<Employee> UnAvaliableEmployee = new List<Employee>();
-                    List<Location> OrgLoations = ctx.Locations.Where(x => x.OrgName == orgname).ToList<Location>();
-
-                    for (int i = 0; i < OrgLoations.Count; i++)
+                    Employee selectedEmp = new Employee();
+                    // List<Employee> AvaliableEmployee = new List<Employee>();
+                    // List<Employee> UnAvaliableEmployee = new List<Employee>();
+                    List<RepeatedResponseDTO> response = new List<RepeatedResponseDTO>();
+                    Appointment addAppointment = new Appointment();
+                    addAppointment.orgname = repeatedAppointmentDTO.orgname;
+                    addAppointment.service = repeatedAppointmentDTO.service;
+                    addAppointment.uid = int.Parse(repeatedAppointmentDTO.uid);
+                    addAppointment.username = repeatedAppointmentDTO.username;
+                    addAppointment.pfname = repeatedAppointmentDTO.pfname;
+                    addAppointment.plname = repeatedAppointmentDTO.plname;
+                    addAppointment.gender = repeatedAppointmentDTO.gender;
+                    addAppointment.phnum = repeatedAppointmentDTO.phnum;
+                    addAppointment.timeslot = repeatedAppointmentDTO.time;
+                    addAppointment.timeduration = repeatedAppointmentDTO.timeduration;
+                    addAppointment.status = repeatedAppointmentDTO.status;
+                    addAppointment.ratings = int.Parse(repeatedAppointmentDTO.ratings);
+                    Schedule addSchedule = new Schedule();
+                    addSchedule.orgname = repeatedAppointmentDTO.orgname;
+                    addSchedule.timeslot = repeatedAppointmentDTO.time;
+                    addSchedule.shift = repeatedAppointmentDTO.shift;
+                    addSchedule.ratings = double.Parse(repeatedAppointmentDTO.ratings);
+                    var ServiceList = ctx.Services.Where(x => x.Name == repeatedAppointmentDTO.service).ToList<Service>();
+                    var Dep = ServiceList.FirstOrDefault().Staff;
+                    addAppointment.dep = Dep;
+                    addSchedule.dep = Dep;
+                    List<Employee> EmployeeList = ctx.Employees.OrderByDescending(x => x.Raitings).Where(x => (x.OrgName == repeatedAppointmentDTO.orgname) && (x.Department == Dep) && (x.Shift == repeatedAppointmentDTO.shift)).ToList<Employee>();
+                    if (EmployeeList.Count == 0)
                     {
-                        Distance = distance(double.Parse(OrgLoations[i].Lat), double.Parse(lat), double.Parse(OrgLoations[i].Long), double.Parse(lng));
-                        if (Distance < double.Parse(OrgLoations[i].Radius))
+                        response.FirstOrDefault().status = "No Employee in available in this Organization/shift/department";
+                        return Request.CreateResponse(HttpStatusCode.OK, (response));
+                    }
+                    else
+                    {
+                        for (int i = 0; i < EmployeeList.Count; i++)
                         {
-                            Zone = OrgLoations[i].Zones;
-                            break;
+                           // Distance = distance(double.Parse(EmployeeList[i].Lat), double.Parse(repeatedAppointmentDTO.lat), double.Parse(EmployeeList[i].Long), double.Parse(repeatedAppointmentDTO.lng));
+
+                            //if (Distance > double.Parse(EmployeeList[i].Radius))
+                            //{
+                            //    Avaliblity = false;
+                            //    EmployeeList[i].Availablity = Avaliblity;
+                            //    EmployeeList[i].Distance = Distance.ToString();
+                            //    // UnAvaliableEmployee.Add(EmployeeList[i]);
+
+                            //}
+                            //else
+                            //{
+                                int eid = EmployeeList[i].eid;
+                                List<Schedule> EmployeeSchedule = ctx.Schedules.Where(x => x.eid == eid).ToList<Schedule>();
+                                if (EmployeeSchedule.Count == 0)
+                                {
+                                    Avaliblity = true;
+                                    EmployeeList[i].Availablity = Avaliblity;
+                                    EmployeeList[i].Distance = Distance.ToString();
+                                    // AvaliableEmployee.Add(EmployeeList[i]);
+                                    selectedEmp = EmployeeList[i];
+                                    addAppointment.eid = selectedEmp.eid;
+                                    addSchedule.eid = selectedEmp.eid;
+                                    addSchedule.fname = selectedEmp.Fname;
+                                    addSchedule.lname = selectedEmp.Lname;
+                                    addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
+                                    for (int w = 0; w < repeatedAppointmentDTO.date.Count; w++)
+                                    {
+                                        addAppointment.date = repeatedAppointmentDTO.date[w];
+                                        addSchedule.date = repeatedAppointmentDTO.date[w];
+                                        response.Add( new RepeatedResponseDTO() {date = addAppointment.date, time= addAppointment.timeslot, employee= addAppointment.empname, status="Booked"});
+                                        db.Appointments.Add(addAppointment); 
+                                        db.Schedules.Add(addSchedule);
+                                        db.SaveChanges();
+                                        repeatedAppointmentDTO.date[w] = repeatedAppointmentDTO.date[w]+"-Booked";
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 0; j < repeatedAppointmentDTO.date.Count; j++)
+                                    {
+                                        for (int q = 0; q < EmployeeSchedule.Count; q++)
+                                        {
+                                            if (EmployeeSchedule[q].date == repeatedAppointmentDTO.date[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
+                                            {
+                                                Avaliblity = false;
+                                                //UnAvaliableEmployee.Add(EmployeeList[i]);
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                Avaliblity = true;
+                                            }
+                                        }
+                                        if (Avaliblity == true)
+                                        {
+                                            EmployeeList[i].Availablity = Avaliblity;
+                                            EmployeeList[i].Distance = Distance.ToString();
+                                            // AvaliableEmployee.Add(EmployeeList[i]);
+                                            selectedEmp = EmployeeList[i];
+                                            addAppointment.eid = selectedEmp.eid;
+                                            addSchedule.eid = selectedEmp.eid;
+                                            addSchedule.fname = selectedEmp.Fname;
+                                            addSchedule.lname = selectedEmp.Lname;
+                                            addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
+                                            addAppointment.date = repeatedAppointmentDTO.date[j];
+                                            addSchedule.date = repeatedAppointmentDTO.date[j];
+                                            db.Appointments.Add(addAppointment);
+                                            response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
+                                            db.Schedules.Add(addSchedule);
+                                            db.SaveChanges();
+                                            repeatedAppointmentDTO.date[j] = repeatedAppointmentDTO.date[j] +"-Booked";
+                                        }
+                                        else
+                                        {
+                                        response.Add(new RepeatedResponseDTO() { date = repeatedAppointmentDTO.date[j], time = repeatedAppointmentDTO.time, employee ="No Employee Available", status = "Unbooked" });
+                                        continue;
+                                        }
+
+                                    }
+                                }
+                           // }
                         }
                     }
+                    return Request.CreateResponse(HttpStatusCode.OK, (response));
+                }
+            }
+            catch (Exception ex)
+            {
 
-                    List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == orgname) && (x.Zone == Zone) && (x.Department == dep) && (x.Shift == shift)).ToList<Employee>();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+
+            }
+        }
+
+        [HttpPost]
+        public HttpResponseMessage GetOrgAvailableEmp(AppointmentRequestDTO appointmentRequestDTO)
+        {
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                   // double Distance = 0.0;
+                    string reaseon = "";
+                    bool Avaliblity = false;
+                   // string Zone = "";
+                    List<Employee> AvaliableEmployee = new List<Employee>();
+                    List<Employee> UnAvaliableEmployee = new List<Employee>();
+                   // List<Location> OrgLoations = ctx.Locations.Where(x => x.OrgName == appointmentRequestDTO.orgname).ToList<Location>();
+                    var dep = ctx.Services.Where(x => (x.Name == appointmentRequestDTO.service)&&(x.Organization == appointmentRequestDTO.orgname)).ToList<Service>();
+                    string department = dep.FirstOrDefault().Staff;
+                    //for (int i = 0; i < OrgLoations.Count; i++)
+                    //{
+                    //    Distance = distance(double.Parse(OrgLoations[i].Lat), double.Parse(appointmentRequestDTO.lat), double.Parse(OrgLoations[i].Long), double.Parse(appointmentRequestDTO.lng));
+                    //    if (Distance < double.Parse(OrgLoations[i].Radius))
+                    //    {
+                    //        Zone = OrgLoations[i].Zones;
+                    //        break;
+                    //    }
+                    //}
+
+                    List<Employee> EmployeeList = ctx.Employees.OrderBy(x => x.eid).Where(x => (x.OrgName == appointmentRequestDTO.orgname)/*&& (x.Zone == Zone)*/ && (x.Department == department) && (x.Shift == appointmentRequestDTO.shift)).ToList<Employee>();
                     if (EmployeeList.Count == 0)
                     {
                         reaseon = "No Employee in available in this Organization/shift/department";
-                        return Request.CreateResponse(HttpStatusCode.OK, reaseon);
+                        return Request.CreateResponse(HttpStatusCode.OK, (AvaliableEmployee, UnAvaliableEmployee));
                     }
                     else
                     {
@@ -202,28 +520,28 @@ namespace HhcApi.Controllers
                                 {
                                     Avaliblity = true;
                                     EmployeeList[i].Availablity = Avaliblity;
-                                    EmployeeList[i].Distance = Distance.ToString();
+                                   // EmployeeList[i].Distance = Distance.ToString();
                                     AvaliableEmployee.Add(EmployeeList[i]);
                                 }
                                 else
                                 {
                                     for (int j = 0; j < EmployeeSchedule.Count; j++)
                                     {
-                                        if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time)
+                                        if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == appointmentRequestDTO.time)
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is busy in given date and time";
                                             //UnAvaliableEmployee.Add(EmployeeList[i]);
                                             break;
                                         }
-                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == "Leave")
+                                        else if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == "Leave")
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is on full-day leave";
                                             //UnAvaliableEmployee.Add(EmployeeList[i]);
                                             break;
                                         }
-                                        else if (EmployeeSchedule[j].date == date && EmployeeSchedule[j].timeslot == time + "L")
+                                        else if (EmployeeSchedule[j].date == appointmentRequestDTO.date && EmployeeSchedule[j].timeslot == appointmentRequestDTO.time + "L")
                                         {
                                             Avaliblity = false;
                                             reaseon = "Employee is on leave at given time slot";
@@ -238,13 +556,13 @@ namespace HhcApi.Controllers
                                     if (Avaliblity == true)
                                     {
                                         EmployeeList[i].Availablity = Avaliblity;
-                                        EmployeeList[i].Distance = Distance.ToString();
+                                        //EmployeeList[i].Distance = Distance.ToString();
                                         AvaliableEmployee.Add(EmployeeList[i]);
                                     }
                                     else
                                     {
                                         EmployeeList[i].Availablity = Avaliblity;
-                                        EmployeeList[i].Distance = Distance.ToString();
+                                        //EmployeeList[i].Distance = Distance.ToString();
                                         UnAvaliableEmployee.Add(EmployeeList[i]);
                                     }
 
@@ -258,7 +576,7 @@ namespace HhcApi.Controllers
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.OK, (reaseon, UnAvaliableEmployee));
+                            return Request.CreateResponse(HttpStatusCode.OK, (AvaliableEmployee, UnAvaliableEmployee));
                         }
                     }
 

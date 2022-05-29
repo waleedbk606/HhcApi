@@ -176,6 +176,7 @@
     <Compile Include="Models\Appointment.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\AppointmentRequestDTO.cs" />
     <Compile Include="Models\Employee.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -203,6 +204,8 @@
     <Compile Include="Models\Organization.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\RepeatedAppointmentDTO.cs" />
+    <Compile Include="Models\RepeatedResponseDTO.cs" />
     <Compile Include="Models\Schedule.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

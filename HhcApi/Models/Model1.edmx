@@ -66,6 +66,7 @@
           <Property Name="Long" Type="nvarchar(max)" />
           <Property Name="Radius" Type="nvarchar(max)" />
           <Property Name="Zones" Type="nvarchar(max)" />
+          <Property Name="City" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Login">
           <Key>
@@ -132,7 +133,7 @@
           <Property Name="Username" Type="varchar(max)" Nullable="false" />
           <Property Name="Password" Type="varchar(max)" Nullable="false" />
           <Property Name="Lat" Type="varchar(max)" />
-          <Property Name="long" Type="varchar(max)" />
+          <Property Name="Lng" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -170,7 +171,6 @@
         </EntityType>
         <EntityContainer Name="HHCEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Logins" EntityType="Self.Login" />
-          <EntitySet Name="Signups" EntityType="HHCModel.Signup" />
           <EntitySet Name="Services" EntityType="HHCModel.Service" />
           <EntitySet Name="sysdiagrams" EntityType="HHCModel.sysdiagram" />
           <EntitySet Name="Appointments" EntityType="HHCModel.Appointment" />
@@ -178,20 +178,8 @@
           <EntitySet Name="Organizations" EntityType="HHCModel.Organization" />
           <EntitySet Name="Locations" EntityType="HHCModel.Location" />
           <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
+          <EntitySet Name="Signups" EntityType="HHCModel.Signup" />
           </EntityContainer>
-        <EntityType Name="Signup">
-          <Key>
-            <PropertyRef Name="Uid" />
-          </Key>
-          <Property Name="Uid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Fname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Lname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="long" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="Service">
           <Key>
             <PropertyRef Name="id" />
@@ -293,6 +281,7 @@
           <Property Name="Long" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Radius" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Zones" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Schedule">
           <Key>
@@ -309,6 +298,19 @@
           <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="timeslot" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="Signup">
+          <Key>
+            <PropertyRef Name="Uid" />
+          </Key>
+          <Property Name="Uid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Lname" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Lng" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -322,20 +324,6 @@
                 <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="Role" ColumnName="Role" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Signups">
-            <EntityTypeMapping TypeName="HHCModel.Signup">
-              <MappingFragment StoreEntitySet="Signup">
-                <ScalarProperty Name="long" ColumnName="long" />
-                <ScalarProperty Name="Lat" ColumnName="Lat" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Lname" ColumnName="Lname" />
-                <ScalarProperty Name="Fname" ColumnName="Fname" />
-                <ScalarProperty Name="Uid" ColumnName="Uid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -438,6 +426,7 @@
           <EntitySetMapping Name="Locations">
             <EntityTypeMapping TypeName="HHCModel.Location">
               <MappingFragment StoreEntitySet="Locations">
+                <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="Zones" ColumnName="Zones" />
                 <ScalarProperty Name="Radius" ColumnName="Radius" />
                 <ScalarProperty Name="Long" ColumnName="Long" />
@@ -460,6 +449,20 @@
                 <ScalarProperty Name="fname" ColumnName="fname" />
                 <ScalarProperty Name="eid" ColumnName="eid" />
                 <ScalarProperty Name="sid" ColumnName="sid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Signups">
+            <EntityTypeMapping TypeName="HHCModel.Signup">
+              <MappingFragment StoreEntitySet="Signup">
+                <ScalarProperty Name="Lng" ColumnName="Lng" />
+                <ScalarProperty Name="Lat" ColumnName="Lat" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Lname" ColumnName="Lname" />
+                <ScalarProperty Name="Fname" ColumnName="Fname" />
+                <ScalarProperty Name="Uid" ColumnName="Uid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

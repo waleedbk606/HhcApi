@@ -20,5 +20,6 @@ namespace HhcApi.Models
         public string Long { get; set; }
         public string Radius { get; set; }
         public string Zones { get; set; }
+        public string City { get; set; }
     }
 }

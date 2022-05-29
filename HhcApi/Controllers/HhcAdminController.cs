@@ -166,16 +166,22 @@ namespace HhcApi.Controllers
         {
             try
             {
-                var entity = db.Organizations.FirstOrDefault(e => e.id == id);
-                if (entity == null)
+                using (var ctx = new HHCEntities())
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Organization with id=" + id.ToString() + "not found to delete");
-                }
-                else
-                {
-                    db.Organizations.Remove(entity);
-                    db.SaveChanges();
-                    return Request.CreateResponse(HttpStatusCode.OK);
+                    var entity = db.Organizations.FirstOrDefault(e => e.id == id);
+                    if (entity == null)
+                    {
+                    
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Organization with id=" + id.ToString() + "not found to delete");
+                    }
+                    else
+                    {
+                        var locations = ctx.Database.ExecuteSqlCommand("Delete from Locations WHERE OrgName='" + entity.Name + "' ");
+                        db.Organizations.Remove(entity);
+                      
+                        db.SaveChanges();
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
                 }
             }
             catch (Exception ex)

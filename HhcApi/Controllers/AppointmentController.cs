@@ -1,4 +1,5 @@
 ﻿using HhcApi.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -210,13 +211,13 @@ namespace HhcApi.Controllers
                     Employee selectedEmp = new Employee();
                     Appointment addAppointment = new Appointment();
                     List<RepeatedResponseDTO> response = new List<RepeatedResponseDTO>();
+                    List<string> DateList = JsonConvert.DeserializeObject<List<string>>(repeatedAppointmentDTO.date);
                     addAppointment.orgname = repeatedAppointmentDTO.orgname;
                     addAppointment.service = repeatedAppointmentDTO.service;
                     addAppointment.uid = int.Parse(repeatedAppointmentDTO.uid);
                     addAppointment.username = repeatedAppointmentDTO.username;
                     addAppointment.pfname = repeatedAppointmentDTO.pfname;
                     addAppointment.plname = repeatedAppointmentDTO.plname;
-                    addAppointment.gender = repeatedAppointmentDTO.gender;
                     addAppointment.phnum = repeatedAppointmentDTO.phnum;
                     addAppointment.timeslot = repeatedAppointmentDTO.time;
                     addAppointment.timeduration = repeatedAppointmentDTO.timeduration;
@@ -267,24 +268,24 @@ namespace HhcApi.Controllers
                                     addSchedule.fname = selectedEmp.Fname;
                                     addSchedule.lname = selectedEmp.Lname;
                                     addAppointment.empname = selectedEmp.Fname +" "+ selectedEmp.Lname;
-                                    for (int w = 0; w < repeatedAppointmentDTO.date.Count; w++)
+                                    for (int w = 0; w < DateList.Count; w++)
                                     {
-                                        addAppointment.date = repeatedAppointmentDTO.date[w];
-                                        addSchedule.date = repeatedAppointmentDTO.date[w];
+                                        addAppointment.date = DateList[w];
+                                        addSchedule.date = DateList[w];
                                         db.Appointments.Add(addAppointment);
                                         response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
                                         db.Schedules.Add(addSchedule);
                                         db.SaveChanges();
-                                        repeatedAppointmentDTO.date[w] = "Booked";
+                                        DateList[w] = "Booked";
                                     }
                                 }
                                 else
                                 {
-                                    for (int j = 0; j < repeatedAppointmentDTO.date.Count ; j++)
+                                    for (int j = 0; j < DateList.Count ; j++)
                                     {
                                             for (int q = 0; q < EmployeeSchedule.Count; q++)
                                             {
-                                                if (EmployeeSchedule[q].date == repeatedAppointmentDTO.date[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
+                                                if (EmployeeSchedule[q].date == DateList[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
                                                 {
                                                     Avaliblity = false;
                                                     //UnAvaliableEmployee.Add(EmployeeList[i]);
@@ -306,17 +307,17 @@ namespace HhcApi.Controllers
                                                 addSchedule.fname = selectedEmp.Fname;
                                                 addSchedule.lname = selectedEmp.Lname;
                                                 addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
-                                                addAppointment.date = repeatedAppointmentDTO.date[j];
-                                                addSchedule.date = repeatedAppointmentDTO.date[j];
+                                                addAppointment.date = DateList[j];
+                                                addSchedule.date = DateList[j];
                                                 db.Appointments.Add(addAppointment);
                                                 response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
                                                 db.Schedules.Add(addSchedule);
                                                 db.SaveChanges();
-                                                repeatedAppointmentDTO.date[j] = "Booked";
+                                                DateList[j] = "Booked";
                                             }
                                             else
                                             {
-                                            response.Add(new RepeatedResponseDTO() { date = repeatedAppointmentDTO.date[j], time = repeatedAppointmentDTO.time, employee = "No Employee Available", status = "Unbooked" });
+                                            response.Add(new RepeatedResponseDTO() { date = DateList[j], time = repeatedAppointmentDTO.time, employee = "No Employee Available", status = "Unbooked" });
                                             continue;
                                             }
                                         
@@ -347,8 +348,7 @@ namespace HhcApi.Controllers
                     string reaseon = "";
                     bool Avaliblity = false;
                     Employee selectedEmp = new Employee();
-                    // List<Employee> AvaliableEmployee = new List<Employee>();
-                    // List<Employee> UnAvaliableEmployee = new List<Employee>();
+                    List<string> DateList = JsonConvert.DeserializeObject<List<string>>(repeatedAppointmentDTO.date);
                     List<RepeatedResponseDTO> response = new List<RepeatedResponseDTO>();
                     Appointment addAppointment = new Appointment();
                     addAppointment.orgname = repeatedAppointmentDTO.orgname;
@@ -408,24 +408,24 @@ namespace HhcApi.Controllers
                                     addSchedule.fname = selectedEmp.Fname;
                                     addSchedule.lname = selectedEmp.Lname;
                                     addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
-                                    for (int w = 0; w < repeatedAppointmentDTO.date.Count; w++)
+                                    for (int w = 0; w < DateList.Count; w++)
                                     {
-                                        addAppointment.date = repeatedAppointmentDTO.date[w];
-                                        addSchedule.date = repeatedAppointmentDTO.date[w];
+                                        addAppointment.date = DateList[w];
+                                        addSchedule.date = DateList[w];
                                         response.Add( new RepeatedResponseDTO() {date = addAppointment.date, time= addAppointment.timeslot, employee= addAppointment.empname, status="Booked"});
                                         db.Appointments.Add(addAppointment); 
                                         db.Schedules.Add(addSchedule);
                                         db.SaveChanges();
-                                        repeatedAppointmentDTO.date[w] = repeatedAppointmentDTO.date[w]+"-Booked";
+                                        DateList[w] = DateList[w]+ "-Booked";
                                     }
                                 }
                                 else
                                 {
-                                    for (int j = 0; j < repeatedAppointmentDTO.date.Count; j++)
+                                    for (int j = 0; j < DateList.Count; j++)
                                     {
                                         for (int q = 0; q < EmployeeSchedule.Count; q++)
                                         {
-                                            if (EmployeeSchedule[q].date == repeatedAppointmentDTO.date[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
+                                            if (EmployeeSchedule[q].date == DateList[j] && (EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time || EmployeeSchedule[q].timeslot == "Leave" || EmployeeSchedule[q].timeslot == repeatedAppointmentDTO.time + "L"))
                                             {
                                                 Avaliblity = false;
                                                 //UnAvaliableEmployee.Add(EmployeeList[i]);
@@ -447,17 +447,17 @@ namespace HhcApi.Controllers
                                             addSchedule.fname = selectedEmp.Fname;
                                             addSchedule.lname = selectedEmp.Lname;
                                             addAppointment.empname = selectedEmp.Fname + " " + selectedEmp.Lname;
-                                            addAppointment.date = repeatedAppointmentDTO.date[j];
-                                            addSchedule.date = repeatedAppointmentDTO.date[j];
+                                            addAppointment.date = DateList[j];
+                                            addSchedule.date = DateList[j];
                                             db.Appointments.Add(addAppointment);
                                             response.Add(new RepeatedResponseDTO() { date = addAppointment.date, time = addAppointment.timeslot, employee = addAppointment.empname, status = "Booked" });
                                             db.Schedules.Add(addSchedule);
                                             db.SaveChanges();
-                                            repeatedAppointmentDTO.date[j] = repeatedAppointmentDTO.date[j] +"-Booked";
+                                            DateList[j] = DateList[j] +"-Booked";
                                         }
                                         else
                                         {
-                                        response.Add(new RepeatedResponseDTO() { date = repeatedAppointmentDTO.date[j], time = repeatedAppointmentDTO.time, employee ="No Employee Available", status = "Unbooked" });
+                                        response.Add(new RepeatedResponseDTO() { date = DateList[j], time = repeatedAppointmentDTO.time, employee ="No Employee Available", status = "Unbooked" });
                                         continue;
                                         }
 

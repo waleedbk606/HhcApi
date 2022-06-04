@@ -21,7 +21,7 @@ namespace HhcApi.Models
         public string ratings { get; set; } 
         public string lat { get; set; }
         public string lng { get; set; }
-        public List<string> date { get; set; }
+        public string date { get; set; }
         public string time { get; set; }
     }
 }

@@ -177,9 +177,11 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AppointmentRequestDTO.cs" />
+    <Compile Include="Models\AvailEmpResponseDTO.cs" />
     <Compile Include="Models\Employee.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LeaveRequestDTO.cs" />
     <Compile Include="Models\Location.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

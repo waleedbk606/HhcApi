@@ -28,6 +28,8 @@
           <Property Name="timeduration" Type="nchar" MaxLength="10" />
           <Property Name="status" Type="nvarchar(max)" />
           <Property Name="ratings" Type="int" />
+          <Property Name="lat" Type="nvarchar(max)" />
+          <Property Name="lng" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Employee">
           <Key>
@@ -173,12 +175,12 @@
           <EntitySet Name="Logins" EntityType="Self.Login" />
           <EntitySet Name="Services" EntityType="HHCModel.Service" />
           <EntitySet Name="sysdiagrams" EntityType="HHCModel.sysdiagram" />
-          <EntitySet Name="Appointments" EntityType="HHCModel.Appointment" />
           <EntitySet Name="Employees" EntityType="HHCModel.Employee" />
           <EntitySet Name="Organizations" EntityType="HHCModel.Organization" />
           <EntitySet Name="Locations" EntityType="HHCModel.Location" />
           <EntitySet Name="Schedules" EntityType="HHCModel.Schedule" />
           <EntitySet Name="Signups" EntityType="HHCModel.Signup" />
+          <EntitySet Name="Appointments" EntityType="HHCModel.Appointment" />
           </EntityContainer>
         <EntityType Name="Service">
           <Key>
@@ -200,30 +202,6 @@
           <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="Appointment">
-          <Key>
-            <PropertyRef Name="aid" />
-          </Key>
-          <Property Name="aid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="orgname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="eid" Type="Int32" Nullable="false" />
-          <Property Name="empname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="dep" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="service" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="uid" Type="Int32" Nullable="false" />
-          <Property Name="username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="pfname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="plname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="age" Type="Int32" />
-          <Property Name="gender" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="phnum" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="timeslot" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="timeduration" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ratings" Type="Int32" />
         </EntityType>
         <EntityType Name="Employee">
           <Key>
@@ -311,6 +289,32 @@
           <Property Name="Lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Lng" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Appointment">
+          <Key>
+            <PropertyRef Name="aid" />
+          </Key>
+          <Property Name="aid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="orgname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="eid" Type="Int32" Nullable="false" />
+          <Property Name="empname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="dep" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="service" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="uid" Type="Int32" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="pfname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="plname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="age" Type="Int32" />
+          <Property Name="gender" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="phnum" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="date" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="timeslot" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="timeduration" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ratings" Type="Int32" />
+          <Property Name="lat" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="lng" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -347,31 +351,6 @@
                 <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
                 <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Appointments">
-            <EntityTypeMapping TypeName="HHCModel.Appointment">
-              <MappingFragment StoreEntitySet="Appointments">
-                <ScalarProperty Name="ratings" ColumnName="ratings" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="timeduration" ColumnName="timeduration" />
-                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
-                <ScalarProperty Name="date" ColumnName="date" />
-                <ScalarProperty Name="address" ColumnName="address" />
-                <ScalarProperty Name="phnum" ColumnName="phnum" />
-                <ScalarProperty Name="gender" ColumnName="gender" />
-                <ScalarProperty Name="age" ColumnName="age" />
-                <ScalarProperty Name="plname" ColumnName="plname" />
-                <ScalarProperty Name="pfname" ColumnName="pfname" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="uid" ColumnName="uid" />
-                <ScalarProperty Name="service" ColumnName="service" />
-                <ScalarProperty Name="dep" ColumnName="dep" />
-                <ScalarProperty Name="empname" ColumnName="empname" />
-                <ScalarProperty Name="eid" ColumnName="eid" />
-                <ScalarProperty Name="orgname" ColumnName="orgname" />
-                <ScalarProperty Name="aid" ColumnName="aid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -463,6 +442,33 @@
                 <ScalarProperty Name="Lname" ColumnName="Lname" />
                 <ScalarProperty Name="Fname" ColumnName="Fname" />
                 <ScalarProperty Name="Uid" ColumnName="Uid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Appointments">
+            <EntityTypeMapping TypeName="HHCModel.Appointment">
+              <MappingFragment StoreEntitySet="Appointments">
+                <ScalarProperty Name="lng" ColumnName="lng" />
+                <ScalarProperty Name="lat" ColumnName="lat" />
+                <ScalarProperty Name="ratings" ColumnName="ratings" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="timeduration" ColumnName="timeduration" />
+                <ScalarProperty Name="timeslot" ColumnName="timeslot" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="phnum" ColumnName="phnum" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="plname" ColumnName="plname" />
+                <ScalarProperty Name="pfname" ColumnName="pfname" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="uid" ColumnName="uid" />
+                <ScalarProperty Name="service" ColumnName="service" />
+                <ScalarProperty Name="dep" ColumnName="dep" />
+                <ScalarProperty Name="empname" ColumnName="empname" />
+                <ScalarProperty Name="eid" ColumnName="eid" />
+                <ScalarProperty Name="orgname" ColumnName="orgname" />
+                <ScalarProperty Name="aid" ColumnName="aid" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

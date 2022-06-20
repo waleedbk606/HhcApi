@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -87,6 +88,318 @@ namespace HhcApi.Controllers
                 throw;
             }
         
+        }
+        [HttpPost]
+        public HttpResponseMessage ApplyLeave(LeaveRequestDTO leaveRequestDTO)
+        {
+
+            try
+            {
+                using (var ctx = new HHCEntities())
+                {
+                    Schedule scheduleObj = new Schedule();
+                    bool leave = false;
+                    if (leaveRequestDTO.time == null || leaveRequestDTO.time == "")
+                    {
+                        var appointments = ctx.Appointments.Where(e => e.eid == leaveRequestDTO.eid && e.date == leaveRequestDTO.date).ToList<Appointment>();
+                        var scheduleList = ctx.Schedules.Where(e => (e.eid == leaveRequestDTO.eid && e.date == leaveRequestDTO.date)).ToList<Schedule>();
+                        if ((scheduleList == null || scheduleList.Count == 0) && (appointments == null || appointments.Count == 0))
+                        {
+                            {
+                                scheduleObj.eid = leaveRequestDTO.eid;
+                                scheduleObj.date = leaveRequestDTO.date;
+                                scheduleObj.timeslot = "Leave";
+                                scheduleObj.fname = leaveRequestDTO.fname;
+                                scheduleObj.lname = leaveRequestDTO.lname;
+                                scheduleObj.orgname = leaveRequestDTO.orgname;
+                                scheduleObj.dep = leaveRequestDTO.dep;
+                                scheduleObj.shift = leaveRequestDTO.shift;
+                                scheduleObj.ratings = leaveRequestDTO.ratings;
+                            }
+                            db.Schedules.Add(scheduleObj);
+                            db.SaveChanges();
+                            leave = true;
+                            return Request.CreateResponse(HttpStatusCode.OK, "Leave confirmed");
+                        }
+                        else
+                        {
+                            foreach (var schedule in scheduleList)
+                            {
+                                if (schedule.timeslot == "Leave")   
+                                {
+                                    return Request.CreateResponse(HttpStatusCode.OK, "Already have leave");
+                                }
+                                db.Schedules.Attach(schedule);
+                                db.Schedules.Remove(schedule);
+                                db.SaveChanges();
+                            }
+                            if (appointments != null || appointments.Count != 0)
+                            {
+                                foreach (var appointment in appointments)
+                                {
+                                    AppointmentRequestDTO appointmentRequestDTO = new AppointmentRequestDTO();
+                                    {
+                                        appointmentRequestDTO.orgname = leaveRequestDTO.orgname;
+                                        appointmentRequestDTO.service = appointment.service;
+                                        appointmentRequestDTO.shift = leaveRequestDTO.shift;
+                                        appointmentRequestDTO.date = appointment.date;
+                                        appointmentRequestDTO.time = appointment.timeslot;
+                                        appointmentRequestDTO.lat = appointment.lat;
+                                        appointmentRequestDTO.lng = appointment.lng;
+                                    }
+                                    if (leaveRequestDTO.orgname == "Independent")
+                                    {
+                                        var availableEmpList = GetIndAvailableEmp(appointmentRequestDTO);
+                                        var result = availableEmpList.Content.ReadAsStringAsync().Result;
+                                        var availEmpResponseDTO = JsonConvert.DeserializeObject<AvailEmpResponseDTO>(result);
+                                        if (availEmpResponseDTO.Item1 == null)
+                                        {
+                                            Appointment updateAppointment = appointment;
+                                            updateAppointment.status = "Cancelled";
+                                            db.Appointments.Attach(appointment);
+                                            db.Appointments.Remove(appointment);
+                                            db.SaveChanges();
+                                            db.Appointments.Add(updateAppointment);
+                                            db.SaveChanges();
+                                           
+                                        }
+                                        else
+                                        {
+                                            Appointment updateAppointment = appointment;
+                                            updateAppointment.eid = availEmpResponseDTO.Item1.First().eid;
+                                            updateAppointment.empname = availEmpResponseDTO.Item1.First().Fname + " " + availEmpResponseDTO.Item1.First().Lname;
+                                            db.Appointments.Attach(appointment);
+                                            db.Appointments.Remove(appointment);
+                                            db.SaveChanges();
+                                            db.Appointments.Add(updateAppointment);
+                                            db.SaveChanges();
+                                            {
+                                                scheduleObj.eid = availEmpResponseDTO.Item1.First().eid;
+                                                scheduleObj.date = leaveRequestDTO.date;
+                                                scheduleObj.timeslot = appointment.timeslot;
+                                                scheduleObj.fname = availEmpResponseDTO.Item1.First().Fname;
+                                                scheduleObj.lname = availEmpResponseDTO.Item1.First().Lname;
+                                                scheduleObj.orgname = leaveRequestDTO.orgname;
+                                                scheduleObj.dep = leaveRequestDTO.dep;
+                                                scheduleObj.shift = leaveRequestDTO.shift;
+                                                scheduleObj.ratings = leaveRequestDTO.ratings;
+                                            }
+                                            db.Schedules.Add(scheduleObj);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var availableEmpList = GetOrgAvailableEmp(appointmentRequestDTO);
+                                        var result = availableEmpList.Content.ReadAsStringAsync().Result;
+                                        var availEmpResponseDTO = JsonConvert.DeserializeObject<AvailEmpResponseDTO>(result);
+                                        if (availEmpResponseDTO.Item1 == null)
+                                        {
+                                            Appointment updateAppointment = appointment;
+                                            updateAppointment.status = "Cancelled";
+                                            db.Appointments.Attach(appointment);
+                                            db.Appointments.Remove(appointment);
+                                            db.SaveChanges();
+                                            db.Appointments.Add(updateAppointment);
+                                            db.SaveChanges();
+
+                                        }
+                                        else
+                                        {
+                                            Appointment updateAppointment = appointment;
+                                            updateAppointment.eid = availEmpResponseDTO.Item1.First().eid;
+                                            updateAppointment.empname = availEmpResponseDTO.Item1.First().Fname + " " + availEmpResponseDTO.Item1.First().Lname;
+                                            db.Appointments.Attach(appointment);
+                                            db.Appointments.Remove(appointment);
+                                            db.SaveChanges();
+                                            db.Appointments.Add(updateAppointment);
+                                            db.SaveChanges();
+                                            {
+                                                scheduleObj.eid = availEmpResponseDTO.Item1.First().eid;
+                                                scheduleObj.date = leaveRequestDTO.date;
+                                                scheduleObj.timeslot = appointment.timeslot;
+                                                scheduleObj.fname = availEmpResponseDTO.Item1.First().Fname;
+                                                scheduleObj.lname = availEmpResponseDTO.Item1.First().Lname;
+                                                scheduleObj.orgname = leaveRequestDTO.orgname;
+                                                scheduleObj.dep = leaveRequestDTO.dep;
+                                                scheduleObj.shift = leaveRequestDTO.shift;
+                                                scheduleObj.ratings = leaveRequestDTO.ratings;
+                                            }
+                                            db.Schedules.Add(scheduleObj);
+                                            db.SaveChanges();
+                                        }
+                                    }
+                                }
+                            }
+                            {
+                                scheduleObj.eid = leaveRequestDTO.eid;
+                                scheduleObj.date = leaveRequestDTO.date;
+                                scheduleObj.timeslot = "Leave";
+                                scheduleObj.fname = leaveRequestDTO.fname;
+                                scheduleObj.lname = leaveRequestDTO.lname;
+                                scheduleObj.orgname = leaveRequestDTO.orgname;
+                                scheduleObj.dep = leaveRequestDTO.dep;
+                                scheduleObj.shift = leaveRequestDTO.shift;
+                                scheduleObj.ratings = leaveRequestDTO.ratings;
+                            }
+                            db.Schedules.Add(scheduleObj);
+                            db.SaveChanges();
+                            leave = true;
+                            return Request.CreateResponse(HttpStatusCode.OK, "Leave confirmed");
+                        }
+                    }
+                    else
+                    {
+                        var appointment = ctx.Appointments.Where(e => e.eid == leaveRequestDTO.eid && (e.date == leaveRequestDTO.date && e.timeslot == leaveRequestDTO.time)).First();
+                        var schedule = ctx.Schedules.Where(e => (e.eid == leaveRequestDTO.eid && e.date == leaveRequestDTO.date && e.timeslot == leaveRequestDTO.time)).First();
+                        if (appointment == null && schedule == null)
+                        {
+                            {
+                                scheduleObj.eid = leaveRequestDTO.eid;
+                                scheduleObj.date = leaveRequestDTO.date;
+                                scheduleObj.timeslot = leaveRequestDTO.time + "L";
+                                scheduleObj.fname = leaveRequestDTO.fname;
+                                scheduleObj.lname = leaveRequestDTO.lname;
+                                scheduleObj.orgname = leaveRequestDTO.orgname;
+                                scheduleObj.dep = leaveRequestDTO.dep;
+                                scheduleObj.shift = leaveRequestDTO.shift;
+                                scheduleObj.ratings = leaveRequestDTO.ratings;
+                            }
+                            db.Schedules.Add(scheduleObj);
+                            db.SaveChanges();
+                            leave = true;
+                            return Request.CreateResponse(HttpStatusCode.OK, "Leave confirmed");
+                        }
+                        else
+                        {
+                            AppointmentRequestDTO appointmentRequestDTO = new AppointmentRequestDTO();
+                            {
+                                appointmentRequestDTO.orgname = leaveRequestDTO.orgname;
+                                appointmentRequestDTO.service = appointment.service;
+                                appointmentRequestDTO.shift = leaveRequestDTO.shift;
+                                appointmentRequestDTO.date = appointment.date;
+                                appointmentRequestDTO.time = appointment.timeslot;
+                                appointmentRequestDTO.lat = appointment.lat;
+                                appointmentRequestDTO.lng = appointment.lng;
+                            }
+                            if (leaveRequestDTO.orgname == "Independent")
+                            {
+                                var availableEmpList = GetIndAvailableEmp(appointmentRequestDTO);
+                                var result = availableEmpList.Content.ReadAsStringAsync().Result;
+                                var availEmpResponseDTO = JsonConvert.DeserializeObject<AvailEmpResponseDTO>(result);
+                                if (availEmpResponseDTO.Item1 == null || availEmpResponseDTO.Item1.Count == 0)
+                                {
+                                    Appointment updateAppointment = appointment;
+                                    updateAppointment.status = "Cancelled";
+                                    db.Appointments.Attach(appointment);
+                                    db.Appointments.Remove(appointment);
+                                    db.SaveChanges();
+                                    db.Appointments.Add(updateAppointment);
+                                    db.SaveChanges();
+                                    scheduleObj = schedule;
+                                    scheduleObj.timeslot = scheduleObj.timeslot + "L";
+                                    db.Schedules.Attach(schedule);
+                                    db.Schedules.Remove(schedule);
+                                    db.SaveChanges();
+                                    db.Schedules.Add(scheduleObj);
+                                    db.SaveChanges();
+                                    leave = true;
+                                }
+                                else 
+                                {
+                                    Appointment updateAppointment = appointment;
+                                    updateAppointment.eid = availEmpResponseDTO.Item1.First().eid;
+                                    updateAppointment.empname = availEmpResponseDTO.Item1.First().Fname + " " + availEmpResponseDTO.Item1.First().Lname;
+                                    db.Appointments.Attach(appointment);
+                                    db.Appointments.Remove(appointment);
+                                    db.SaveChanges();
+                                    db.Appointments.Add(updateAppointment);
+                                    db.SaveChanges();
+                                    scheduleObj = schedule;
+                                    scheduleObj.eid = availEmpResponseDTO.Item1.First().eid;
+                                    scheduleObj.fname = availEmpResponseDTO.Item1.First().Fname;
+                                    scheduleObj.lname = availEmpResponseDTO.Item1.First().Lname;
+                                    db.Schedules.Attach(schedule);
+                                    db.Schedules.Remove(schedule);
+                                    db.SaveChanges();
+                                    db.Schedules.Add(scheduleObj);
+                                    db.SaveChanges();
+                                    schedule.timeslot = schedule.timeslot + "L";
+                                    db.Schedules.Add(schedule);
+                                    db.SaveChanges();
+                                    leave = true;
+                                }
+
+                            }
+                            else
+                            {
+                                var availableEmpList = GetOrgAvailableEmp(appointmentRequestDTO);
+                                var result = availableEmpList.Content.ReadAsStringAsync().Result;
+                                var availEmpResponseDTO = JsonConvert.DeserializeObject<AvailEmpResponseDTO>(result);
+                                if (availEmpResponseDTO.Item1 == null || availEmpResponseDTO.Item1.Count == 0)
+                                {
+                                    Appointment updateAppointment = appointment;
+                                    updateAppointment.status = "Cancelled";
+                                    db.Appointments.Attach(appointment);
+                                    db.Appointments.Remove(appointment);
+                                    db.SaveChanges();
+                                    db.Appointments.Add(updateAppointment);
+                                    db.SaveChanges();
+                                    scheduleObj = schedule;
+                                    scheduleObj.timeslot = scheduleObj.timeslot + "L";
+                                    db.Schedules.Attach(schedule);
+                                    db.Schedules.Remove(schedule);
+                                    db.SaveChanges();
+                                    db.Schedules.Add(scheduleObj);
+                                    db.SaveChanges();
+                                    leave = true;
+                                }
+                                else
+                                {
+                                    Appointment updateAppointment = appointment;
+                                    updateAppointment.eid = availEmpResponseDTO.Item1.First().eid;
+                                    updateAppointment.empname = availEmpResponseDTO.Item1.First().Fname + " " + availEmpResponseDTO.Item1.First().Lname;
+                                    db.Appointments.Attach(appointment);
+                                    db.Appointments.Remove(appointment);
+                                    db.SaveChanges();
+                                    db.Appointments.Add(updateAppointment);
+                                    db.SaveChanges();
+                                    scheduleObj = schedule;
+                                    scheduleObj.eid = availEmpResponseDTO.Item1.First().eid;
+                                    scheduleObj.fname = availEmpResponseDTO.Item1.First().Fname;
+                                    scheduleObj.lname = availEmpResponseDTO.Item1.First().Lname;
+                                    db.Schedules.Attach(schedule);
+                                    db.Schedules.Remove(schedule);
+                                    db.SaveChanges();
+                                    db.Schedules.Add(scheduleObj);
+                                    db.SaveChanges();
+                                    schedule.timeslot = schedule.timeslot + "L";
+                                    db.Schedules.Add(schedule);
+                                    db.SaveChanges();
+                                    leave = true;
+                                }
+                            }
+
+                            //if (schedule != null)
+                            //{
+                            //    scheduleObj = schedule;
+                            //    scheduleObj.timeslot = scheduleObj.timeslot + "L";
+                            //    db.Schedules.Attach(schedule);
+                            //    db.Schedules.Remove(schedule);
+                            //    db.SaveChanges();
+                            //    db.Schedules.Add(scheduleObj);
+                            //    db.SaveChanges();
+                            //    leave = true;
+                            //}
+                        }
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, "Leave Approved");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
         [HttpPost]
         public HttpResponseMessage GetIndAvailableEmp(AppointmentRequestDTO appointmentRequestDTO)
@@ -317,7 +630,7 @@ namespace HhcApi.Controllers
                                             }
                                             else
                                             {
-                                            response.Add(new RepeatedResponseDTO() { date = DateList[j], time = repeatedAppointmentDTO.time, employee = "No Employee Available", status = "Unbooked" });
+                                            response.Add(new RepeatedResponseDTO() { date = DateList[j], time = repeatedAppointmentDTO.time, employee = "Not Available", status = "Unbooked" });
                                             continue;
                                             }
                                         

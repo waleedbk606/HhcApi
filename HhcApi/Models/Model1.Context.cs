@@ -28,11 +28,11 @@ namespace HhcApi.Models
         public virtual DbSet<Login> Logins { get; set; }
         public virtual DbSet<Service> Services { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
-        public virtual DbSet<Appointment> Appointments { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
         public virtual DbSet<Location> Locations { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Signup> Signups { get; set; }
+        public virtual DbSet<Appointment> Appointments { get; set; }
     }
 }

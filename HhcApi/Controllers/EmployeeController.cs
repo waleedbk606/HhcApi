@@ -163,6 +163,7 @@ namespace HhcApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+       
         [HttpPatch]
         public HttpResponseMessage NoLeave(int eid)
         {

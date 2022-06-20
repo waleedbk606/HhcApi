@@ -33,5 +33,7 @@ namespace HhcApi.Models
         public string timeduration { get; set; }
         public string status { get; set; }
         public Nullable<int> ratings { get; set; }
+        public string lat { get; set; }
+        public string lng { get; set; }
     }
 }
